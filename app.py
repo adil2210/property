@@ -1,5 +1,6 @@
 from sqlalchemy import and_, or_, not_, update,func
 from sqlalchemy.sql.dml import Update
+from flask import Flask
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -38,8 +39,8 @@ app.config['DEBUG'] = True
 app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_SIZE'] = 1000
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 # db = SQLAlchemy(app)
 
@@ -150,7 +151,7 @@ def SignUp():
                         n=0
                         for i in getId:
                             n=i.id
-                        n = n+1
+                        # n = n+1
                         addPerm = permissions(uid=n, Accounts=Accounts, Purchase=Purchase,
                                             Sale=Sale, Supper=Supper)
                         db.session.add(addPerm)
@@ -247,7 +248,7 @@ def login():
             pur=n.Purchase
             s=n.Sale
             su=n.Supper
-           
+
         if pbkdf2_sha256.verify(password,passs):
             session['logged in'] = True
             data = {
