@@ -28,7 +28,7 @@ pymysql.install_as_MySQLdb()
 
 
 app = Flask(__name__)
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 
 CORS(app)
 mail= Mail(app)
@@ -42,7 +42,7 @@ app.config['TESTING'] = True
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-# db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 
 
 # construction file importsad
