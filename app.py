@@ -17,7 +17,7 @@ import jwt
 import datetime
 from flask_mail import Mail,Message
 import random
-# from construction import constructionAmount,constructionAddPlot,constructionAddSupplier
+from construction import constructionAmount,constructionAddPlot,constructionAddSupplier
 import sqlite3 as sql
 from flask_marshmallow import Marshmallow
 import os
@@ -45,9 +45,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 
 # construction file importsad
-# app.register_blueprint(constructionAmount)
-# app.register_blueprint(constructionAddPlot)
-# app.register_blueprint(constructionAddSupplier)
+app.register_blueprint(constructionAmount)
+app.register_blueprint(constructionAddPlot)
+app.register_blueprint(constructionAddSupplier)
 
 
 
