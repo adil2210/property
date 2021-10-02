@@ -28,7 +28,6 @@ pymysql.install_as_MySQLdb()
 
 
 app = Flask(__name__)
-# db = SQLAlchemy(app)
 
 CORS(app)
 mail= Mail(app)
@@ -41,7 +40,7 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pms.db'
 db = SQLAlchemy(app)
 
 
