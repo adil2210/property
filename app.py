@@ -66,6 +66,9 @@ app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_DEBUG'] = True
 app.config['MAIL_SUPPRESS_SEND'] = False
 
+# const PORT =process.env.PORT||
+
+
 mail = Mail(app)
 
 
@@ -1458,4 +1461,4 @@ def updateAccountDetailsAfterToken(table):
 db.create_all()
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=8080)
