@@ -50,16 +50,11 @@ app.register_blueprint(constructionAddPlot)
 app.register_blueprint(constructionAddSupplier)
 
 
-
-
-
 UPLOAD_FOLDER = 'images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 PLOT_FOLDER = 'plotimg'
 app.config['PLOT_FOLDER'] = PLOT_FOLDER
-
 app.config['SECRET_KEY'] = 'JustDemonstrating'
-
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
