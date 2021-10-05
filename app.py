@@ -72,11 +72,6 @@ app.config['MAIL_SUPPRESS_SEND'] = False
 mail = Mail(app)
 
 
-@app.route("/" ,methods=['POST'])
-def deploy():
-    return make_response("badar")
-
-
 @app.route("/email")
 def index():
    msg = Message('Hello cake', sender =app.config['MAIL_USERNAME'], recipients = ['badarbaig21@gmail.com'])
