@@ -106,9 +106,7 @@ print("jdaksjdkad")
 def getUserId():
     jwtToken = request.headers.get('Authorization')
     cleared_header = jwtToken[7:]
-    #stripHeader = cleared_header.strip(".")
     print("token is:", cleared_header)
-    #decoded = base64.b64decode(jwtToken)
     decodedToken = jwt.decode(
         cleared_header, app.config['SECRET_KEY'], algorithms=["HS256"])
     return decodedToken['id']
@@ -126,7 +124,6 @@ def SignUp():
         phoneno = signupAPI['phone']
         cnic = signupAPI['cnic']
         role = signupAPI['role']
-        # permissions=signupAPI['permissions']
         Accounts = signupAPI['permissions']['accounts']
         Purchase = signupAPI['permissions']['purchase']
         Sale = signupAPI['permissions']['sale']
@@ -148,7 +145,6 @@ def SignUp():
                         n=0
                         for i in getId:
                             n=i.id
-                        # n = n+1
                         addPerm = permissions(uid=n, Accounts=Accounts, Purchase=Purchase,
                                             Sale=Sale, Supper=Supper)
                         db.session.add(addPerm)
