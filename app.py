@@ -598,28 +598,24 @@ def accountsData():
             accDetails=accountsdetail.query.filter(accountsdetail.uid==uid).all()
             print(accDetails)
             if accDetails:
-                print("asdasddasd")
                 print('already have account')
                 return make_response('user already exist!'),400
             else:
-                if  chequeAmount or payorderAmount:
+                if  chequeAmount or payorderAmount or onlineTransfer or amountInCash:
                     tOp = checkTotalOfPayments(amountInCash,chequeAmount, payorderAmount , onlineTransfer)
                     print(tOp)
                     if(tOp != float(amountToInvest)):
-                        print("added amount of is greater or smaller than total investment")
                         return make_response("added amount of is greater or smaller than total investment"),400
                     else:
                         if(accDetails):
-                            print("user already exist")
                             return make_response("user already exists"),400
                         else:
-                            accounts = accountsdetail(uid=uid,accName=accName, bankName=bankName, accNo=accNo, amountToInvest=amountToInvest,
+                            accounts = accountsdetail(uid=uid,name=name,cnic=cnic,contactNo=contactNo,role=role,accName=accName, bankName=bankName, accNo=accNo, amountToInvest=amountToInvest,
                                             dateTime=datetime.datetime.now(), amountInCash=amountInCash, chequeAmount=chequeAmount, noOfCheques=noOfCheques, chequeNo=chequeNo, chequeDescription=chequeDescription,
                                             payorderAmount=payorderAmount, noOfPayOrder=noOfPayOrder, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, onlineTransfer=onlineTransfer, onlineDescription=onlineDescription)
                             db.session.add(accounts)
                             db.session.commit()
                             return make_response("added"), 200
-               
         else:
             return make_response("Access Denied")
 
