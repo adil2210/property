@@ -39,7 +39,7 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pms.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
@@ -519,10 +519,10 @@ def getAlladmins():
 
 
 def checkTotalOfPayments(aIc, cA, pOa, ot):
-    aIc=float(aIc)
-    cA=float(cA)
-    pOa=float(pOa)
-    ot=float(ot)
+    aIc=(aIc)
+    cA=(cA)
+    pOa=(pOa)
+    ot=(ot)
     if aIc and cA and pOa and ot:
         add = aIc+cA+pOa+ot
         return add
@@ -600,27 +600,32 @@ def accountsData():
             onlineTransfer = accountsApi['onlineTransfer']
             onlineDescription = accountsApi['onlineDescription']
             accDetails=accountsdetail.query.filter(accountsdetail.uid==uid).all()
+            print(accDetails)
             if accDetails:
-                if amountInCash or chequeAmount or payorderAmount or onlineTransfer:
-                    tOp = checkTotalOfPayments(amountInCash, chequeAmount, payorderAmount, onlineTransfer)
+                print("asdasddasd")
+                print('already have account')
+                return make_response('user already exist!'),400
+            else:
+                if  chequeAmount or payorderAmount:
+                    tOp = checkTotalOfPayments(amountInCash,chequeAmount, payorderAmount , onlineTransfer)
                     print(tOp)
                     if(tOp != float(amountToInvest)):
+                        print("added amount of is greater or smaller than total investment")
                         return make_response("added amount of is greater or smaller than total investment"),400
                     else:
                         if(accDetails):
+                            print("user already exist")
                             return make_response("user already exists"),400
                         else:
-                            accounts = accountsdetail(uid=uid, name=name, contactNo=contactNo, cnic=cnic, role=role, accName=accName, bankName=bankName, accNo=accNo, amountToInvest=amountToInvest,
+                            accounts = accountsdetail(uid=uid,accName=accName, bankName=bankName, accNo=accNo, amountToInvest=amountToInvest,
                                             dateTime=datetime.datetime.now(), amountInCash=amountInCash, chequeAmount=chequeAmount, noOfCheques=noOfCheques, chequeNo=chequeNo, chequeDescription=chequeDescription,
                                             payorderAmount=payorderAmount, noOfPayOrder=noOfPayOrder, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, onlineTransfer=onlineTransfer, onlineDescription=onlineDescription)
                             db.session.add(accounts)
                             db.session.commit()
                             return make_response("added"), 200
-            else:
-                return make_response('user already exist!'),400
+               
         else:
             return make_response("Access Denied")
-
 
 @app.route('/updateaccount', methods=['POST'])
 def updateAccountsData():
