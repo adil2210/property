@@ -373,10 +373,10 @@ def addPlotToPurchase():
             plotToPurchaseApi = request.get_json()
             societyname = plotToPurchaseApi['societyname']
             sectorno = plotToPurchaseApi['sectorno']
-            plotno = plotToPurchaseApi['plotno']
-            development = plotToPurchaseApi['development']
+            plotno = plotToPurchaseApi['plot']
+            development = bool(plotToPurchaseApi['development'])
             description = plotToPurchaseApi['description']
-            plotamount = plotToPurchaseApi['plotamount']
+            plotamount = float(plotToPurchaseApi['plotamount'])
             plotownername = plotToPurchaseApi['plotownername']
             dev=bool(development)
             addtoPurchase = plottopurchase(societyname=societyname, sectorno=sectorno, plotno=plotno, development=development,
