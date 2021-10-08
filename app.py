@@ -101,7 +101,6 @@ def checkPermission(userid,name):
             return True
         else:
             return False
-print("jdaksjdkad")
 
 def getUserId():
     jwtToken = request.headers.get('Authorization')
@@ -592,7 +591,7 @@ def accountsData():
             payorderAmount = accountsApi['payorderAmount']
             noOfPayOrder = accountsApi['noOfPayOrder']
             payOrderNo = accountsApi['payOrderNo']
-            payOrderDescription = accountsApi['payOrderDescription']
+            payOrderDescription = accountsApi['payorderDescription']
             onlineTransfer = accountsApi['onlineTransfer']
             onlineDescription = accountsApi['onlineDescription']
             accDetails=accountsdetail.query.filter(accountsdetail.uid==uid).all()
