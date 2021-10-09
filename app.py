@@ -362,10 +362,6 @@ def getAccountDataa(id):
 
 
 
-
-
-
-
 # get society name for add plot to purchase
 @app.route('/getsocietiesname', methods=['GET'])
 def getAllSocieties():
