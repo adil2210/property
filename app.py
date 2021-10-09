@@ -39,7 +39,8 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
@@ -155,6 +156,33 @@ def SignUp():
                     return make_response("Phone-NO already exist"), 400
             else:
                 return make_response("Email already exist"), 400
+
+
+# get all users from sign up
+@app.route('/getallusers', methods=['GET'])
+def getAllDataFromSignUp():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = signup.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "username": data.username,
+                        "email": data.email,
+                        "phoneno": data.phoneno,
+                        "cnic": data.cnic,
+                        "role": data.role}
+                allData.append(dict)
+            print(allData)
+            plotAllDataJson = json.dumps(allData)
+            return plotAllDataJson
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
 
 
 @app.route('/reset', methods=['POST'])
@@ -319,9 +347,26 @@ def addsocietydataa():
             return make_response("Access Denied"),400
 
 
+# get accounts data
+@app.route('/getAccountData/<int:id>' , methods=['GET'])
+def getAccountDataa(id):
+    print('badar')
+    print(id)
+    if request.method == 'GET':
+        print('badar')
+        accountData = accountsdetail.query.filter(accountsdetail.id == id).all()
+        print(accountData)
+        return "accountData"
+    else:
+        print('error in appp')
+
+
+
+
+
+
+
 # get society name for add plot to purchase
-
-
 @app.route('/getsocietiesname', methods=['GET'])
 def getAllSocieties():
     societiesName = []
