@@ -462,7 +462,6 @@ def getAllDataFromPlotToPurchase():
     if (request.method == 'GET'):
         allData = []
         getAllData = plottopurchase.query.all()
-        print(getAllData)
         if getAllData:
             for data in getAllData:
                 dict = {"id": data.id,
