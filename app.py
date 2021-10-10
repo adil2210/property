@@ -39,8 +39,8 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
@@ -446,9 +446,8 @@ def addPlotToPurchase():
             description = plotToPurchaseApi['description']
             plotamount = float(plotToPurchaseApi['plotamount'])
             plotownername = plotToPurchaseApi['plotownername']
-            dev=bool(development)
             addtoPurchase = plottopurchase(societyname=societyname, sectorno=sectorno, plotno=plotno, development=development,
-                                        description=description, plotamount=plotamount, plotownername=plotownername)
+                                        description=description, plotamount=plotamount, plotownername=plotownername,dateTime=datetime.datetime.now())
             db.session.add(addtoPurchase)
             db.session.commit()
             return make_response("ok"), 200
@@ -458,7 +457,7 @@ def addPlotToPurchase():
 
 #  get all data from plot to purchase table
 
-@app.route('/getalldata', methods=['GET'])
+@app.route('/getallpptdata', methods=['GET'])
 def getAllDataFromPlotToPurchase():
     if (request.method == 'GET'):
         allData = []
@@ -473,7 +472,9 @@ def getAllDataFromPlotToPurchase():
                         "development": data.development,
                         "description": data.description,
                         "plotamount": data.plotamount,
-                        "plotownername": data.plotownername}
+                        "plotownername": data.plotownername,
+                        "dateTime": data.dateTime,
+                        }
                 allData.append(dict)
             print(allData)
             plotAllDataJson = json.dumps(allData)

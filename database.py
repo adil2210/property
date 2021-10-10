@@ -59,6 +59,8 @@ class plottopurchase(db.Model):
     description = db.Column(db.String(1000), nullable=False)
     plotamount = db.Column(db.String(1000), nullable=False)
     plotownername = db.Column(db.String(100), nullable=False)
+    dateTime = db.Column(db.String(1000), nullable=False)
+    
 
 
 class accountsdetail(db.Model):
