@@ -347,6 +347,33 @@ def addsocietydataa():
             return make_response("Access Denied"),400
 
 
+@app.route('/getalladdsocietydata', methods=['GET'])
+def getAllDataFromAddSocietyData():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = addsocietydata.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "societyname": data.societyname,
+                        "sectorno": data.sectorno,
+                        "plotno": data.plotno,
+                        "plotsize": data.plotsize,
+                        "plottype": data.plottype,
+                        "description": data.description,
+                        }
+                allData.append(dict)
+            print(allData)
+            plotAllDataJson = json.dumps(allData)
+            return plotAllDataJson
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
+
 # get accounts data
 @app.route('/getAccountData/<int:id>' , methods=['GET'])
 def getAccountDataa(id):
