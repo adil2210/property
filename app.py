@@ -190,19 +190,26 @@ def resetPassword():
     if (request.method == 'POST'):
         resetApi=request.get_json()
         email=resetApi['email']
-        randNo=random.randint(100000,999999)
-        print(randNo)
-        msg = Message('Hello cake', sender = app.config['MAIL_USERNAME'], recipients = ['badarbaig21@gmail.com'])
-        msg.body = randNo
-        mail.send(msg)
-        stmt = (update(signup). where(
-                    signup.email == email). values(resetCode=randNo))
-        db.session.execute(stmt)
-        db.session.commit()
-        return make_response("Code has sent on your email"),200
+        email = str(email)
+        checkEmailExist = signup.query.filter(signup.email == email).all()
+        print(checkEmailExist)
+        if checkEmailExist:
+            randNo=random.randint(100000,999999)
+            print(randNo)
+            print(email)
+            msg = Message('reset code', sender =app.config['MAIL_USERNAME'], recipients = [email])
+            msg.body =str(randNo)
+            mail.send(msg)
+            stmt = (update(signup). where(
+                        signup.email == email). values(resetCode=randNo))
+            db.session.execute(stmt)
+            db.session.commit()
+            return make_response("Code has sent on your email"),200
+        else:
+            print('no such email found')
+            return make_response('no such email found!'),400
     else:
         return make_response("error")
-
 
 @app.route('/checkCode', methods=['POST'])
 def checkCodee():
