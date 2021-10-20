@@ -385,9 +385,7 @@ def getAllDataFromAddSocietyData():
 @app.route('/getAccountData/<int:id>' , methods=['GET'])
 def getAccountDataa(id):
     print('badar')
-    print(id)
     if request.method == 'GET':
-        print('badar')
         accountData = accountsdetail.query.filter(accountsdetail.id == id).all()
         print(accountData)
         return "accountData"
@@ -482,7 +480,6 @@ def getAllDataFromPlotToPurchase():
                         "dateTime": data.dateTime,
                         }
                 allData.append(dict)
-            print(allData)
             plotAllDataJson = json.dumps(allData)
             return plotAllDataJson
         else:
@@ -532,21 +529,55 @@ def getAllplotsInfoFromPPT():
         societyname = allplots['societyname']
         getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
                                                     plottopurchase.societyname == societyname)).all()
+        
         for plot in getplots:
             dict = {"id": plot.id,
                     "societyname": plot.societyname,
                     "sectorno": plot.sectorno,
                     "plotno": plot.plotno,
-                    "withdevelopment": plot.withdevelopment,
-                    "withoutdevelopment": plot.withoutdevelopment,
+                    "development": plot.development,
                     "description": plot.description,
                     "plotamount": plot.plotamount,
-                    "plotownername": plot.plotownername}
+                    "plotownername": plot.plotownername,
+                    "dateTime": plot.dateTime,
+                    
+                    }
             plotlist.append(dict)
         plotpptJson = json.dumps(plotlist)
         return plotpptJson
     else:
         return make_response("Error"), 400
+
+
+
+@app.route('/moregetplotsforppt/<societyname>/<sectorno>/<plotno>', methods=['GET'])
+def moreGetAllplotsInfoFromPPT(societyname,sectorno,plotno):
+    if [request.method == 'GET']:
+        plotlist = []
+        # allplots = request.get_json()
+        getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
+                                                    plottopurchase.societyname == societyname)).all()
+        getplots1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
+                                                    addsocietydata.societyname == societyname)).all()
+        for plot,plot1 in zip(getplots,getplots1):
+            dict = {"id": plot.id,
+                    "societyname": plot.societyname,
+                    "sectorno": plot.sectorno,
+                    "plotno": plot.plotno,
+                    "plotamount": plot.plotamount,
+                    "plotownername": plot.plotownername,
+                    "dateTime": plot.dateTime,
+                    "plotsize": plot1.plotsize,
+                    "plottype": plot1.plottype,
+                    "description": plot1.description,
+                    }
+            plotlist.append(dict)
+        plotpptJson = json.dumps(plotlist)
+        return plotpptJson
+    else:
+        return make_response("Error"), 400
+
+
 
 
 @app.route('/getallpartners', methods=['GET'])
