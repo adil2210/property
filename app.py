@@ -812,7 +812,7 @@ def checkPartnerInvestmentWithAmount(partner):
 def paymentsDetails():
     if (request.method == 'POST'):
         print(getUserId())
-        if checkPermission(getUserId(),"Payments"):
+        if checkPermission(getUserId(),"Purchase"):
             jwtToken = request.headers.get('Authorization')
             cleared_header = jwtToken[7:]
             print("token is:", cleared_header)
@@ -850,11 +850,15 @@ def paymentsDetails():
 
             getTotalPlotAmount = plottopurchase.query.filter(
                 plottopurchase.societyname == societyName, plottopurchase.sectorno == sectorNo, plottopurchase.plotno == plotNo).first()
+            print(getTotalPlotAmount)
             totalAmount = getTotalPlotAmount.plotamount
+            # for i in getTotalPlotAmount:
+            #     totalAmount = getTotalPlotAmount.plotamount
+            totalAmount=float(totalAmount)
             remBalance = 0
             if tokenAmount:
                 completeOrNot = "not"
-                remBalance = float(totalAmount)-tokenAmount
+                remBalance = totalAmount-tokenAmount
             else:
                 remBalance = 0
                 completeOrNot = "yes"
@@ -869,13 +873,13 @@ def paymentsDetails():
                         tOp = checkTotalOfPayments(
                             amountInCash, chequeAmount, payorderAmount, onlineTransfer)
                     if(tOp != float(tokenAmount)):
-                        return make_response("added amount of token is greater or smaller than plot total amount")
+                        return make_response("added amount of token in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
                 else:
                     if amountInCash or chequeAmount or payorderAmount or onlineTransfer:
                         tOp = checkTotalOfPayments(
                             amountInCash, chequeAmount, payorderAmount, onlineTransfer)
-                    if(tOp != float(totalAmount)):
-                        return make_response("added amount is greater or smaller than plot total amount")
+                    if(tOp != (totalAmount)):
+                        return make_response("added amount in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
                 if userid:
                     # checking the amount of partners amount is greater than their total investment
                     for partner in userid:
@@ -946,7 +950,7 @@ def paymentsDetails():
                             tOp = checkTotalOfPayments(
                                 amountInCash, chequeAmount, payorderAmount,onlineTransfer)
                         if(tOp > float(tokenAmount)):
-                            return make_response("added amount greater than plot total amount")
+                            return make_response("added amount greater than plot total amount"),400
 
                         adminaccount = accountsdetail.query.filter(
                             accountsdetail.uid == decodedToken["id"]).all()
@@ -1024,13 +1028,13 @@ def paymentsDetails():
                         tOp = checkTotalOfPayments(
                             amountInCash, chequeAmount, payorderAmount)
                     if(tOp != float(tokenAmount)):
-                        return make_response("added amount of token is greater or smaller than plot total amount")
+                        return make_response("added amount of token in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
                 else:
                     if amountInCash or chequeAmount or payorderAmount:
                         tOp = checkTotalOfPayments(
                             amountInCash, chequeAmount, payorderAmount)
                     if(tOp != float(totalAmount)):
-                        return make_response("added amount is greater or smaller than plot total amount")
+                        return make_response("added amount in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
 
                 if tokenAmount:
                     print("chutti ker")
@@ -1102,13 +1106,13 @@ def paymentsDetails():
                         tOp = checkTotalOfPayments(
                             amountInCash, chequeAmount, payorderAmount)
                     if(tOp != float(tokenAmount)):
-                        return make_response("added amount of token is greater or smaller than plot total amount")
+                        return make_response("added amount of token in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
                 else:
                     if amountInCash or chequeAmount or payorderAmount:
                         tOp = checkTotalOfPayments(
                             amountInCash, chequeAmount, payorderAmount)
                     if(tOp != float(totalAmount)):
-                        return make_response("added amount is greater or smaller than plot total amount")
+                        return make_response("added amount in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
 
                 if tokenAmount:
                     adminaccount = accountsdetail.query.filter(
@@ -1176,9 +1180,9 @@ def paymentsDetails():
                                    tokenAmount=tokenAmount, tokenDays=tokenDays, tokenDate=datetime.date.today(), tokenDescription=tokenDescription, taxAmount=taxAmount, taxDescription=taxDescription, onlineTransfer=onlineTransfer, onlineDescription=onlineDescription)
             db.session.add(paymentsAdd)
             db.session.commit()
-            return make_response("add")
+            return make_response("add"),200
         else:
-            return make_response("access denied")
+            return make_response("access denied"),400
 
 
 # return indication if token days less than or equal to 3
