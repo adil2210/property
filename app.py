@@ -39,8 +39,8 @@ app.config['SQLALCHEMY_POOL_SIZE'] = 1000
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
