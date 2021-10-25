@@ -40,8 +40,8 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
@@ -620,7 +620,6 @@ def getAlladmins():
 
 
 
-
 def checkTotalOfPayments(aIc, cA, pOa, ot):
     aIc=(aIc)
     cA=(cA)
@@ -782,28 +781,8 @@ def getAllpartnersForPayments():
     else:
         return make_response("Error"), 400
 
-
-@app.route('/getalladminsfromaccount', methods=['GET'])
-def getAlladminsFromAccount():
-    if (request.method == 'GET'):
-        adminslist = []
-        allUsers = accountsdetail.query.filter(
-            accountsdetail.role == 'admin')
-        print("adil")
-        print(allUsers)
-        for user in allUsers:
-            dict = {"id": user.id,
-                    "name": user.name,
-                    "amountToInvest": user.amountToInvest}
-            adminslist.append(dict)
-        adminListJson = json.dumps(adminslist)
-        return adminListJson
-    else:
-        return make_response("Error"), 400
-
-
-
 # function of sum of partner amounts is not greater than plot total amount
+
 
 def checkTotalAmount(userid):
     totalPartnerAdmAmounts = 0
