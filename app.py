@@ -783,8 +783,8 @@ def getAllpartnersForPayments():
         return make_response("Error"), 400
 
 
-@app.route('/getalladminsfromaccount', methods=['GET'])
-def getAlladminsFromAccount():
+@app.route('/getalladminsforpayments', methods=['GET'])
+def getAlladminsForPayments():
     if (request.method == 'GET'):
         adminslist = []
         allUsers = accountsdetail.query.filter(
