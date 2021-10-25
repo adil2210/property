@@ -39,16 +39,17 @@ app.config['SQLALCHEMY_POOL_SIZE'] = 1000
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
-from construction import constructionAmount,constructionAddPlot,constructionAddSupplier
+from construction import construction
 # construction file importsad
-app.register_blueprint(constructionAmount)
-app.register_blueprint(constructionAddPlot)
-app.register_blueprint(constructionAddSupplier)
+app.register_blueprint(construction)
+# app.register_blueprint(constructionAddPlot)
+# app.register_blueprint(constructionAddSupplier)
 
 
 UPLOAD_FOLDER = 'images'
@@ -1237,37 +1238,60 @@ def tokenForPurchase(tableName):
 @app.route('/getplotsforsaleppt', methods=['GET'])
 def getAllplotsInfoForSalePPT():
     if [request.method == 'GET']:
-        plotlist = []
-        allInfo = []
-        getplots = payments.query.all()
+        if checkPermission(getUserId(),"Sale"):
+            plotlist = []
+            allInfo = []
+            getplots = payments.query.all()
 
-        for plot in getplots:
-            dict = {"societyName": plot.societyName,
-                    "sectorNo": plot.sectorNo,
-                    "plotNo": plot.plotNo}
-            plotlist.append(dict)
-        #print("682" , plotlist)
-        for i in plotlist:
-            info = plottopurchase.query.filter(and_(
-                plottopurchase.societyname == i['societyName'], plottopurchase.sectorno == i['sectorNo'], plottopurchase.plotno == i['plotNo']))
-            for plot in info:
-                dict = {"id": plot.id,
-                        "societyname": plot.societyname,
-                        "sectorno": plot.sectorno,
-                        "plotno": plot.plotno,
-                        "withdevelopment": plot.withdevelopment,
-                        "withoutdevelopment": plot.withoutdevelopment,
-                        "description": plot.description,
-                        "plotamount": plot.plotamount,
-                        "plotownername": plot.plotownername
-                        }
-                #print("697 ",dict)
-                if dict not in allInfo:
-                    allInfo.append(dict)
-        allInfoJson = json.dumps(allInfo)
-        return allInfoJson
-    else:
-        return make_response("Error"), 400
+            for plot in getplots:
+                dict = {"societyName": plot.societyName,
+                        "sectorNo": plot.sectorNo,
+                        "plotNo": plot.plotNo}
+                plotlist.append(dict)
+            #print("682" , plotlist)
+            for i in plotlist:
+                # info = plottopurchase.query.filter(and_(
+                #     plottopurchase.societyname == i['societyName'], plottopurchase.sectorno == i['sectorNo'], plottopurchase.plotno == i['plotNo']))
+                getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == i['sectorNo'],
+                                                        plottopurchase.societyname == i['societyName'],plottopurchase.plotno == i['plotNo'])).all()
+                getplots1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == i['sectorNo'],
+                                                        addsocietydata.societyname == i['societyName'],addsocietydata.plotno == i['plotNo'])).all()
+                for plot,plot1 in zip(getplots,getplots1):
+                    dict = {"id": plot.id,
+                            "societyname": plot.societyname,
+                            "sectorno": plot.sectorno,
+                            "plotno": plot.plotno,
+                            "plotamount": plot.plotamount,
+                            "plotownername": plot.plotownername,
+                            "dateTime": plot.dateTime,
+                            "plotsize": plot1.plotsize,
+                            "plottype": plot1.plottype,
+                            "description": plot1.description,
+                            }
+                    if dict not in allInfo:
+                        allInfo.append(dict)
+            allInfoJson = json.dumps(allInfo)
+            return allInfoJson
+                #     plotlist.append(dict)
+                # plotpptJson = json.dumps(plotlist)
+                # return plotpptJson
+            #     for plot in info:
+            #         dict = {"id": plot.id,
+            #                 "societyname": plot.societyname,
+            #                 "sectorno": plot.sectorno,
+            #                 "plotno": plot.plotno,
+            #                 "development": plot.development,
+            #                 "description": plot.description,
+            #                 "plotamount": plot.plotamount,
+            #                 "plotownername": plot.plotownername
+            #                 }
+            #         #print("697 ",dict)
+            #         if dict not in allInfo:
+            #             allInfo.append(dict)
+            # allInfoJson = json.dumps(allInfo)
+            # return allInfoJson
+        else:
+            return make_response("Error"), 400
 
 
 @app.route('/getsocietiesnameforsaleppt', methods=['GET'])
@@ -1330,26 +1354,23 @@ def getAllplotsInfoForSalePPTagainst():
 def salePlotDetails():
     if (request.method == 'GET'):
         if checkPermission(getUserId() , "Sale"):
-            plotDesc = []
+            # plotDesc = []
             plotToPurchaseApi = request.get_json()
             societyname = plotToPurchaseApi['societyname']
             sectorno = plotToPurchaseApi['sectorno']
             plotno = plotToPurchaseApi['plotno']
-            withdevelopment = plotToPurchaseApi['withdevelopment']
-            withDevelopDescrip = plotToPurchaseApi['withDevelopDescrip']
-            withoutdevelopment = plotToPurchaseApi['withoutdevelopment']
-            withOutDevelopDescrip = plotToPurchaseApi['withOutDevelopDescrip']
+            development = plotToPurchaseApi['development']
+            plotdescription = plotToPurchaseApi['plotdescription']
             plotamount = plotToPurchaseApi['plotamount']
             plotownername = plotToPurchaseApi['plotownername']
-            getPlotDesc = plottopurchase.query.filter(
-                plottopurchase.societyname == societyname, plottopurchase.sectorno == sectorno, plottopurchase.plotno == plotno)
-            for i in getPlotDesc:
-                dict = {"description": i.description}
-                if dict not in plotDesc:
-                    plotDesc.append(dict)
-            print(plotDesc)
-            addtoPurchase = saleplotdetail(societyname=societyname, sectorno=sectorno, plotno=plotno, withdevelopment=withdevelopment, withDevelopDescrip=withDevelopDescrip,
-                                           withoutdevelopment=withoutdevelopment, withOutDevelopDescrip=withOutDevelopDescrip, plotdescription=plotDesc[0]['description'], plotamount=plotamount, plotownername=plotownername)
+            # getPlotDesc = plottopurchase.query.filter(
+            #     plottopurchase.societyname == societyname, plottopurchase.sectorno == sectorno, plottopurchase.plotno == plotno)
+            # for i in getPlotDesc:
+            #     dict = {"description": i.description}
+            #     if dict not in plotDesc:
+            #         plotDesc.append(dict)
+            # print(plotDesc)
+            addtoPurchase = saleplotdetail(societyname=societyname, sectorno=sectorno, plotno=plotno, development=development, plotdescription=plotdescription, plotamount=plotamount, plotownername=plotownername)
             db.session.add(addtoPurchase)
             db.session.commit()
             return make_response("ok"), 200

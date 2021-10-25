@@ -136,10 +136,10 @@ class saleplotdetail(db.Model):
     societyname = db.Column(db.String(100), nullable=False)
     sectorno = db.Column(db.String(100), nullable=False)
     plotno = db.Column(db.String(100), nullable=False)
-    withdevelopment = db.Column(db.Boolean, default=False, nullable=False)
-    withDevelopDescrip=db.Column(db.String(1000),default=None, nullable=False)
-    withoutdevelopment = db.Column(db.Boolean, default=False, nullable=False)
-    withOutDevelopDescrip=db.Column(db.String(1000),default=None, nullable=False)
+    development = db.Column(db.Boolean, default=False, nullable=False)
+    # withDevelopDescrip=db.Column(db.String(1000),default=None, nullable=False)
+    # withoutdevelopment = db.Column(db.Boolean, default=False, nullable=False)
+    # withOutDevelopDescrip=db.Column(db.String(1000),default=None, nullable=False)
     plotdescription = db.Column(db.String(1000), nullable=False)
     plotamount = db.Column(db.String(1000), nullable=False)
     plotownername = db.Column(db.String(100), nullable=False)
@@ -217,6 +217,13 @@ class constructionpurchaseproduct(db.Model):
     unit=db.Column(db.String(1000),default=None,nullable=False)
     quantity=db.Column(db.String(1000),default=None,nullable=False)
     supplierName=db.Column(db.String(1000),default=None,nullable=False)
+    contact=db.Column(db.String(1000),default=None,nullable=False)
+    totalAmount=db.Column(db.Float,default=None,nullable=False)
+    paid=db.Column(db.Float,default=None,nullable=False)
+    paymentMethod=db.Column(db.String(1000),default=None,nullable=False)
+    
+    
+    
     
 
 
