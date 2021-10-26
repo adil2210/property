@@ -39,8 +39,8 @@ app.config['SQLALCHEMY_POOL_SIZE'] = 1000
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
@@ -825,7 +825,15 @@ def checkPartnerInvestmentWithAmount(partner):
     if (pAmount > pInvestment):
         return pName
 
-
+def checkAdminInvestmentWithAmount(partner):
+    account = accountsdetail.query.filter(
+        accountsdetail.id == partner['id']).all()
+    for i in account:
+        pInvestment = float(i.amountToInvest)
+        pName = i.name
+    pAmount = float(partner['amount'])
+    if (pAmount > pInvestment):
+        return pName
 
 
 # all the payments are handling in this route
@@ -835,18 +843,19 @@ def paymentsDetails():
     if (request.method == 'POST'):
         print(getUserId())
         if checkPermission(getUserId(),"Purchase"):
-            jwtToken = request.headers.get('Authorization')
-            cleared_header = jwtToken[7:]
-            print("token is:", cleared_header)
-            decodedToken = jwt.decode(
-                cleared_header, app.config['SECRET_KEY'], algorithms=["HS256"])
-            print("decode token id is : ", decodedToken["id"])
+            # jwtToken = request.headers.get('Authorization')
+            # cleared_header = jwtToken[7:]
+            # print("token is:", cleared_header)
+            # decodedToken = jwt.decode(
+            #     cleared_header, app.config['SECRET_KEY'], algorithms=["HS256"])
+            # print("decode token id is : ", decodedToken["id"])
 
             paymentsAPI = request.get_json()
+            decodedToken=paymentsAPI['admData']
 
-            # member in plots objects
+            # member in plots objectss
             userid = paymentsAPI['userid']
-            adm_amounts = paymentsAPI['adm_amounts']
+            adm_amounts = decodedToken["amount"]
 
             # payments objects
             societyName = paymentsAPI['societyName']
@@ -869,6 +878,7 @@ def paymentsDetails():
             onlineTransfer = paymentsAPI['onlineTransfer']
             onlineDescription = paymentsAPI['onlineDescription']
             completeOrNot = "complete"
+            print(decodedToken["amount"])
 
             getTotalPlotAmount = plottopurchase.query.filter(
                 plottopurchase.societyname == societyName, plottopurchase.sectorno == sectorNo, plottopurchase.plotno == plotNo).first()
@@ -959,10 +969,13 @@ def paymentsDetails():
                 if adm_amounts:
                     # checking the amount of admin is greater than their total investment
                     adminaccount = accountsdetail.query.filter(
-                        accountsdetail.uid == decodedToken["id"]).all()
+                        accountsdetail.id == decodedToken["id"]).all()
+                    print(adminaccount)
                     for i in adminaccount:
                         adInvestment = int(i.amountToInvest)
                         adName = i.name
+                    print("adil")
+                    print(adInvestment)
 
                     if (int(adm_amounts) > adInvestment):
                         return make_response("Added amount is greater than total investment of " + adName), 400
@@ -989,13 +1002,13 @@ def paymentsDetails():
                         adnewInvest = float(
                             adInvestment-float(admTokenAmount)-taxDeductionValueadm)
                         acc = accountsdetail.query.filter(
-                            accountsdetail.uid == decodedToken["id"]).all()
+                            accountsdetail.id == decodedToken["id"]).all()
                         temp = []
                         for i in acc:
                             dict = {"id": i.id}
                             temp.append(dict)
                         stmt = (update(accountsdetail). where(
-                            accountsdetail.id == temp[0]['id']). values(amountToInvest=adnewInvest))
+                            accountsdetail.id == decodedToken['id']). values(amountToInvest=adnewInvest))
                         db.session.execute(stmt)
                         db.session.commit()
                         partnerAmountAgainstPLot = memberinplots(
@@ -1017,7 +1030,7 @@ def paymentsDetails():
                         adnewInvest = float(
                             adInvestment-float(adm_amounts)-taxDeductionValueadm)
                         acc = accountsdetail.query.filter(
-                            accountsdetail.uid == decodedToken["id"]).all()
+                            accountsdetail.id == decodedToken["id"]).all()
                         print(acc)
                         temp = []
                         for i in acc:
@@ -1025,7 +1038,7 @@ def paymentsDetails():
                             temp.append(dict)
                         print(temp)
                         stmt = (update(accountsdetail). where(
-                            accountsdetail.id == temp[0]['id']). values(amountToInvest=adnewInvest))
+                            accountsdetail.id == decodedToken['id']). values(amountToInvest=adnewInvest))
                         db.session.execute(stmt)
                         db.session.commit()
                         partnerAmountAgainstPLot = memberinplots(
@@ -1054,12 +1067,11 @@ def paymentsDetails():
                 else:
                     if amountInCash or chequeAmount or payorderAmount:
                         tOp = checkTotalOfPayments(
-                            amountInCash, chequeAmount, payorderAmount)
+                            amountInCash, chequeAmount, payorderAmount,onlineTransfer)
                     if(tOp != float(totalAmount)):
                         return make_response("added amount in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
 
                 if tokenAmount:
-                    print("chutti ker")
                     # deducting the amount of partners from their investments
                     for partner in userid:
                         account = accountsdetail.query.filter(
@@ -1115,7 +1127,7 @@ def paymentsDetails():
 
                 # checking the amount of admin is greater than their total investment
                 adminaccount = accountsdetail.query.filter(
-                    accountsdetail.uid == decodedToken["id"]).all()
+                    accountsdetail.id == decodedToken["id"]).all()
                 for i in adminaccount:
                     adInvestment = int(i.amountToInvest)
                     adName = i.name
@@ -1126,19 +1138,19 @@ def paymentsDetails():
                 if tokenAmount:
                     if amountInCash or chequeAmount or payorderAmount:
                         tOp = checkTotalOfPayments(
-                            amountInCash, chequeAmount, payorderAmount)
+                            amountInCash, chequeAmount, payorderAmount,onlineTransfer)
                     if(tOp != float(tokenAmount)):
                         return make_response("added amount of token in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
                 else:
                     if amountInCash or chequeAmount or payorderAmount:
                         tOp = checkTotalOfPayments(
-                            amountInCash, chequeAmount, payorderAmount)
+                            amountInCash, chequeAmount, payorderAmount,onlineTransfer)
                     if(tOp != float(totalAmount)):
                         return make_response("added amount in cash, cheque, payorder or online transfer is greater or smaller than plot total amount"),400
 
                 if tokenAmount:
                     adminaccount = accountsdetail.query.filter(
-                        accountsdetail.uid == decodedToken["id"]).all()
+                        accountsdetail.id == decodedToken["id"]).all()
                     for i in adminaccount:
                         adInvestment = float(i.amountToInvest)
                         adName = i.name
@@ -1152,7 +1164,7 @@ def paymentsDetails():
                     adnewInvest = float(
                         adInvestment-float(admTokenAmount)-taxDeductionValueadm)
                     acc = accountsdetail.query.filter(
-                        accountsdetail.uid == decodedToken["id"]).all()
+                        accountsdetail.id == decodedToken["id"]).all()
                     print(acc)
                     temp = []
                     for i in acc:
@@ -1160,7 +1172,7 @@ def paymentsDetails():
                         temp.append(dict)
                     print(temp)
                     stmt = (update(accountsdetail). where(
-                        accountsdetail.id == temp[0]['id']). values(amountToInvest=adnewInvest))
+                        accountsdetail.id == decodedToken['id']). values(amountToInvest=adnewInvest))
                     db.session.execute(stmt)
                     db.session.commit()
                     partnerAmountAgainstPLot = memberinplots(
@@ -1169,7 +1181,7 @@ def paymentsDetails():
                     db.session.commit()
                 else:
                     adminaccount = accountsdetail.query.filter(
-                        accountsdetail.uid == decodedToken["id"]).all()
+                        accountsdetail.id == decodedToken["id"]).all()
                     for i in adminaccount:
                         adInvestment = float(i.amountToInvest)
                         adName = i.name
@@ -1181,7 +1193,7 @@ def paymentsDetails():
                     adnewInvest = float(
                         adInvestment-float(adm_amounts)-taxDeductionValueadm)
                     acc = accountsdetail.query.filter(
-                        accountsdetail.uid == decodedToken["id"]).all()
+                        accountsdetail.id == decodedToken["id"]).all()
                     print(acc)
                     temp = []
                     for i in acc:
@@ -1189,11 +1201,11 @@ def paymentsDetails():
                         temp.append(dict)
                     print(temp)
                     stmt = (update(accountsdetail). where(
-                        accountsdetail.id == temp[0]['id']). values(amountToInvest=adnewInvest))
+                        accountsdetail.id == decodedToken['id']). values(amountToInvest=adnewInvest))
                     db.session.execute(stmt)
                     db.session.commit()
                     partnerAmountAgainstPLot = memberinplots(
-                        userid=temp[0]['id'], names=adName, adm_amounts=adm_amounts, p_amounts="0", percentageInPlot=percInPlotadm, plotid=plotNo, role="admin", societyName=societyName, sectorNo=sectorNo, saleOrNot="No")
+                        userid=decodedToken['id'], names=adName, adm_amounts=adm_amounts, p_amounts="0", percentageInPlot=percInPlotadm, plotid=plotNo, role="admin", societyName=societyName, sectorNo=sectorNo, saleOrNot="No")
                     db.session.add(partnerAmountAgainstPLot)
                     db.session.commit()
 
