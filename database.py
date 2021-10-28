@@ -42,6 +42,9 @@ class addsocietydata(db.Model):
     plottype = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     # sectormapimg = db.Column(db.String(100), nullable=True)
+    ralation3 = db.relationship(
+        'plottopurchase', backref='addsocietydata', lazy='dynamic')
+
 
 
 class plotimages(db.Model):
@@ -52,6 +55,7 @@ class plotimages(db.Model):
 
 class plottopurchase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Integer, db.ForeignKey('addsocietydata.id'))
     societyname = db.Column(db.String(100), nullable=False)
     sectorno = db.Column(db.String(100), nullable=False)
     plotno = db.Column(db.String(100), nullable=False)

@@ -40,8 +40,8 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
@@ -453,7 +453,11 @@ def addPlotToPurchase():
             description = plotToPurchaseApi['description']
             plotamount = float(plotToPurchaseApi['plotamount'])
             plotownername = plotToPurchaseApi['plotownername']
-            addtoPurchase = plottopurchase(societyname=societyname, sectorno=sectorno, plotno=plotno, development=development,
+            getplots = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
+                                                addsocietydata.societyname == societyname,addsocietydata.plotno == plotno)).all()
+            for plot in getplots:
+                idd=plot.id
+            addtoPurchase = plottopurchase(uid=idd,societyname=societyname, sectorno=sectorno, plotno=plotno, development=development,
                                         description=description, plotamount=plotamount, plotownername=plotownername,dateTime=datetime.datetime.now())
             db.session.add(addtoPurchase)
             db.session.commit()
@@ -552,15 +556,41 @@ def getAllplotsInfoFromPPT():
 
 
 
-@app.route('/moregetplotsforppt/<societyname>/<sectorno>/<plotno>', methods=['GET'])
-def moreGetAllplotsInfoFromPPT(societyname,sectorno,plotno):
+# @app.route('/moregetplotsforppt/<societyname>/<sectorno>/<plotno>', methods=['GET'])
+# def moreGetAllplotsInfoFromPPT(societyname,sectorno,plotno):
+#     if [request.method == 'GET']:
+#         plotlist = []
+#         # allplots = request.get_json()
+#         getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
+#                                                     plottopurchase.societyname == societyname)).all()
+#         getplots1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
+#                                                     addsocietydata.societyname == societyname)).all()
+#         for plot,plot1 in zip(getplots,getplots1):
+#             dict = {"id": plot.id,
+#                     "societyname": plot.societyname,
+#                     "sectorno": plot.sectorno,
+#                     "plotno": plot.plotno,
+#                     "plotamount": plot.plotamount,
+#                     "plotownername": plot.plotownername,
+#                     "dateTime": plot.dateTime,
+#                     "plotsize": plot1.plotsize,
+#                     "plottype": plot1.plottype,
+#                     "description": plot1.description,
+#                     }
+#             plotlist.append(dict)
+#         plotpptJson = json.dumps(plotlist)
+#         return plotpptJson
+#     else:
+#         return make_response("Error"), 400
+
+
+@app.route('/moregetplotsforppt/<int:id>', methods=['GET'])
+def moreGetAllplotsInfoFromPPT(id):
     if [request.method == 'GET']:
         plotlist = []
         # allplots = request.get_json()
-        getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
-                                                    plottopurchase.societyname == societyname)).all()
-        getplots1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
-                                                    addsocietydata.societyname == societyname)).all()
+        getplots = plottopurchase.query.filter(and_(plottopurchase.uid == id)).all()
+        getplots1 = addsocietydata.query.filter(and_(addsocietydata.id == id)).all()
         for plot,plot1 in zip(getplots,getplots1):
             dict = {"id": plot.id,
                     "societyname": plot.societyname,
