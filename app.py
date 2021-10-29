@@ -356,6 +356,9 @@ def addsocietydataa():
             return make_response("Access Denied"),400
 
 
+
+
+
 @app.route('/getalladdsocietydata', methods=['GET'])
 def getAllDataFromAddSocietyData():
     if (request.method == 'GET'):
@@ -386,7 +389,6 @@ def getAllDataFromAddSocietyData():
 # get accounts data
 @app.route('/getAccountData/<int:id>' , methods=['GET'])
 def getAccountDataa(id):
-    print('badar')
     if request.method == 'GET':
         accountData = accountsdetail.query.filter(accountsdetail.id == id).all()
         print(accountData)
@@ -757,6 +759,37 @@ def accountsData():
         else:
             return make_response("Access Denied")
 
+@app.route('/getIndividualAccountDetails/<int:id>', methods=['GET'])
+def getAccountDetails(id):
+    if [request.method == 'GET']:
+        dataList = []
+        # allplots = request.get_json()
+        accDetails = accountsdetail.query.filter(and_(accountsdetail.uid == id)).all()
+        print(accDetails)
+        for data in accDetails:
+            dict = {"accName": data.accName,
+                    "bankName": data.bankName,
+                    "accNo": data.accNo,
+                    "amountToInvest": data.amountToInvest,
+                    "amountInCash": data.amountInCash,
+                    "chequeAmount": data.chequeAmount,
+                    "noOfCheques": data.noOfCheques,
+                    "chequeNo": data.chequeNo,
+                    "payorderAmount": data.payorderAmount,
+                    "noOfPayOrder": data.noOfPayOrder,
+                    "payOrderNo": data.payOrderNo,
+                    "onlineTransfer": data.onlineTransfer
+                    }
+            if dict not in dataList:
+                dataList.append(dict)
+            # dataList.append(dict)
+        dataListJson = json.dumps(dataList)
+        return dataListJson
+    else:
+        return make_response("Error"), 400
+
+
+
 @app.route('/updateaccount', methods=['POST'])
 def updateAccountsData():
     if (request.method == 'POST'):
@@ -1068,7 +1101,7 @@ def paymentsDetails():
                             dict = {"id": i.id}
                             temp.append(dict)
                         print(temp)
-                        stmt = (update(accountsdetail). where(
+                        stmt = (update(accountsdetail). where(  
                             accountsdetail.id == decodedToken['id']). values(amountToInvest=adnewInvest))
                         db.session.execute(stmt)
                         db.session.commit()
