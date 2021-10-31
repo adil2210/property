@@ -40,8 +40,8 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
@@ -562,17 +562,22 @@ def getAllplotsInfoFromPPT():
 def infoAgainstSocietyNameSectorNo(societyname,sectorno):
     if [request.method == 'GET']:
         plotlist = []
+        temp=[]
         # allplots = request.get_json()
-        getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
-                                                    plottopurchase.societyname == societyname)).all()
-        getplots1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
-                                                    addsocietydata.societyname == societyname)).all()
-        for plot,plot1 in zip(getplots,getplots1):
+        getData = plottopurchase.query.filter(and_( plottopurchase.societyname == societyname,plottopurchase.sectorno == sectorno)).all()
+        for plot in getData:
+            dict = {"plotno": plot.plotno}
+            temp.append(dict)
+        for i in temp:
+            getData1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
+                                                    addsocietydata.societyname == societyname,addsocietydata.plotno == i['plotno'])).all()
+        for plot,plot1 in zip(getData,getData1):
             dict = {"id": plot.id,
                     "societyname": plot.societyname,
                     "sectorno": plot.sectorno,
                     "plotno": plot.plotno,
                     "plotamount": plot.plotamount,
+                    "description1": plot1.description,
                     "plotownername": plot.plotownername,
                     "dateTime": plot.dateTime,
                     "plotsize": plot1.plotsize,
@@ -584,6 +589,41 @@ def infoAgainstSocietyNameSectorNo(societyname,sectorno):
         return plotpptJson
     else:
         return make_response("Error"), 400
+
+@app.route('/saleInfoAgainstSocietyNameSectorNo/<societyname>/<sectorno>', methods=['GET'])
+def saleInfoAgainstSocietyNameSectorNo(societyname,sectorno):
+    if [request.method == 'GET']:
+        plotlist = []
+        temp=[]
+        # allplots = request.get_json()
+        getData = payments.query.filter(and_( payments.societyName == societyname,payments.sectorNo == sectorno)).all()
+        for plot in getData:
+            dict = {"plotno": plot.plotNo}
+            temp.append(dict)
+        for i in temp:
+            getData1 = plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
+                                                    plottopurchase.societyname == societyname,plottopurchase.plotno == i['plotno'])).all()
+            getData2 = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
+                                                    addsocietydata.societyname == societyname,addsocietydata.plotno == i['plotno'])).all()
+        for plot,plot1 in zip(getData1,getData2):
+            dict = {"id": plot.id,
+                    "societyname": plot.societyname,
+                    "sectorno": plot.sectorno,
+                    "plotno": plot.plotno,
+                    "plotamount": plot.plotamount,
+                    "description1": plot1.description,
+                    "plotownername": plot.plotownername,
+                    "dateTime": plot.dateTime,
+                    "plotsize": plot1.plotsize,
+                    "plottype": plot1.plottype,
+                    "description": plot1.description
+                    }
+            plotlist.append(dict)
+        plotpptJson = json.dumps(plotlist)
+        return plotpptJson
+    else:
+        return make_response("Error"), 400
+
 
 
 @app.route('/moregetplotsforppt/<int:id>', methods=['GET'])
@@ -599,11 +639,12 @@ def moreGetAllplotsInfoFromPPT(id):
                     "sectorno": plot.sectorno,
                     "plotno": plot.plotno,
                     "plotamount": plot.plotamount,
+                    "description1": plot1.description,
                     "plotownername": plot.plotownername,
                     "dateTime": plot.dateTime,
                     "plotsize": plot1.plotsize,
                     "plottype": plot1.plottype,
-                    "description": plot1.description,
+                    "description": plot1.description
                     }
             plotlist.append(dict)
         plotpptJson = json.dumps(plotlist)
@@ -616,15 +657,23 @@ def moreGetAllplotsInfoFromPPT(id):
 def infoAgainstSocietyName(societyname):
     if [request.method == 'GET']:
         plotlist = []
-        # allplots = request.get_json()
+        temp=[]
+        # allplots = request.get_json
         getData = plottopurchase.query.filter(and_( plottopurchase.societyname == societyname)).all()
-        getData1 = addsocietydata.query.filter(and_(addsocietydata.societyname == societyname)).all()
+        for plot in getData:
+            dict = {"sectorno": plot.sectorno,
+                    "plotno": plot.plotno}
+            temp.append(dict)
+        for i in temp:
+            getData1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == i['sectorno'],
+                                                    addsocietydata.societyname == societyname,addsocietydata.plotno == i['plotno'])).all()
         for plot,plot1 in zip(getData,getData1):
             dict = {"id": plot.id,
                     "societyname": plot.societyname,
                     "sectorno": plot.sectorno,
                     "plotno": plot.plotno,
                     "plotamount": plot.plotamount,
+                    "description1": plot.description,
                     "plotownername": plot.plotownername,
                     "dateTime": plot.dateTime,
                     "plotsize": plot1.plotsize,
@@ -637,6 +686,41 @@ def infoAgainstSocietyName(societyname):
     else:
         return make_response("Error"), 400
 
+
+@app.route('/saleInfoAgainstSocietyName/<societyname>', methods=['GET'])
+def saleInfoAgainstSocietyName(societyname):
+    if [request.method == 'GET']:
+        plotlist = []
+        temp=[]
+        # allplots = request.get_json
+        getData = payments.query.filter(and_( payments.societyName == societyname)).all()
+        for plot in getData:
+            dict = {"sectorno": plot.sectorNo,
+                    "plotno": plot.plotNo}
+            temp.append(dict)
+        for i in temp:
+            getData2 = addsocietydata.query.filter(and_(addsocietydata.sectorno == i['sectorno'],
+                                                    addsocietydata.societyname == societyname,addsocietydata.plotno == i['plotno'])).all()
+            getData1 = plottopurchase.query.filter(and_(plottopurchase.sectorno == i['sectorno'],
+                                                    plottopurchase.societyname == societyname,plottopurchase.plotno == i['plotno'])).all()
+        for plot,plot1 in zip(getData1,getData2):
+            dict = {"id": plot.id,
+                    "societyname": plot.societyname,
+                    "sectorno": plot.sectorno,
+                    "plotno": plot.plotno,
+                    "plotamount": plot.plotamount,
+                    "description1": plot.description,
+                    "plotownername": plot.plotownername,
+                    "dateTime": plot.dateTime,
+                    "plotsize": plot1.plotsize,
+                    "plottype": plot1.plottype,
+                    "description": plot1.description,
+                    }
+            plotlist.append(dict)
+        plotpptJson = json.dumps(plotlist)
+        return plotpptJson
+    else:
+        return make_response("Error"), 400
 
 
 
@@ -1365,16 +1449,12 @@ def getAllplotsInfoForSalePPT():
             plotlist = []
             allInfo = []
             getplots = payments.query.all()
-
             for plot in getplots:
                 dict = {"societyName": plot.societyName,
                         "sectorNo": plot.sectorNo,
                         "plotNo": plot.plotNo}
                 plotlist.append(dict)
-            #print("682" , plotlist)
             for i in plotlist:
-                # info = plottopurchase.query.filter(and_(
-                #     plottopurchase.societyname == i['societyName'], plottopurchase.sectorno == i['sectorNo'], plottopurchase.plotno == i['plotNo']))
                 getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == i['sectorNo'],
                                                         plottopurchase.societyname == i['societyName'],plottopurchase.plotno == i['plotNo'])).all()
                 getplots1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == i['sectorNo'],
@@ -1454,25 +1534,27 @@ def getAllplotsInfoForSalePPTagainst():
         getplots = payments.query.filter(and_(payments.sectorNo == sectorno,
                                               payments.societyName == societyname)).all()
         for i in getplots:
-            info = plottopurchase.query.filter(and_(
-                plottopurchase.societyname == i.societyName, plottopurchase.sectorno == i.sectorNo, plottopurchase.plotno == i.plotNo))
-            for plot in info:
+            # info = plottopurchase.query.filter(and_(
+            #     plottopurchase.societyname == i.societyName, plottopurchase.sectorno == i.sectorNo, plottopurchase.plotno == i.plotNo))
+            getplots = plottopurchase.query.filter(and_(plottopurchase.societyname == i.societyName, plottopurchase.sectorno == i.sectorNo, plottopurchase.plotno == i.plotNo)).all()
+            getplots1 = addsocietydata.query.filter(and_(addsocietydata.societyname == i.societyName, addsocietydata.sectorno == i.sectorNo, addsocietydata.plotno == i.plotNo)).all()
+            for plot,plot1 in zip(getplots,getplots1):
                 dict = {"id": plot.id,
                         "societyname": plot.societyname,
                         "sectorno": plot.sectorno,
                         "plotno": plot.plotno,
-                        "withdevelopment": plot.withdevelopment,
-                        "withoutdevelopment": plot.withoutdevelopment,
-                        "description": plot.description,
                         "plotamount": plot.plotamount,
-                        "plotownername": plot.plotownername}
+                        "description1": plot.description,
+                        "plotownername": plot.plotownername,
+                        "dateTime": plot.dateTime,
+                        "plotsize": plot1.plotsize,
+                        "plottype": plot1.plottype,
+                        "description": plot1.description,
+                        }
                 if dict not in allInfo:
                     allInfo.append(dict)
         allInfoJson = json.dumps(allInfo)
         return allInfoJson
-    else:
-        return make_response("Error"), 400
-
 
 @app.route('/saleplotdetails', methods=['GET'])
 def salePlotDetails():
