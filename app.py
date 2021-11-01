@@ -47,10 +47,7 @@ db = SQLAlchemy(app)
 from database import *
 db.create_all()
 from construction import construction
-# construction file importsad
 app.register_blueprint(construction)
-# app.register_blueprint(constructionAddPlot)
-# app.register_blueprint(constructionAddSupplier)
 
 
 UPLOAD_FOLDER = 'images'
@@ -68,9 +65,6 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_DEBUG'] = True
 app.config['MAIL_SUPPRESS_SEND'] = False
-
-# const PORT =process.env.PORT||
-
 
 mail = Mail(app)
 
@@ -630,16 +624,25 @@ def saleInfoAgainstSocietyNameSectorNo(societyname,sectorno):
 def moreGetAllplotsInfoFromPPT(id):
     if [request.method == 'GET']:
         plotlist = []
+        temp=[]
         # allplots = request.get_json()
-        getplots = plottopurchase.query.filter(and_(plottopurchase.uid == id)).all()
-        getplots1 = addsocietydata.query.filter(and_(addsocietydata.id == id)).all()
+        getplots = plottopurchase.query.filter(and_(plottopurchase.id == id)).all()
+        # getplots1 = addsocietydata.query.filter(and_(addsocietydata.id == id)).all()
+        for plot in getplots:
+            dict = {"societyname": plot.societyname,
+                    "sectorno": plot.sectorno,
+                    "plotno": plot.plotno}
+            temp.append(dict)
+        for i in temp:
+            getplots1 = addsocietydata.query.filter(and_(addsocietydata.sectorno == i['sectorno'],
+                                                    addsocietydata.societyname == i['societyname'],addsocietydata.plotno == i['plotno'])).all()
         for plot,plot1 in zip(getplots,getplots1):
             dict = {"id": plot.id,
                     "societyname": plot.societyname,
                     "sectorno": plot.sectorno,
                     "plotno": plot.plotno,
                     "plotamount": plot.plotamount,
-                    "description1": plot1.description,
+                    "description1": plot.description,
                     "plotownername": plot.plotownername,
                     "dateTime": plot.dateTime,
                     "plotsize": plot1.plotsize,
@@ -1614,6 +1617,8 @@ def SalePaymentsDetails():
                 completeORNot = "yes"
             updatedValue = 0
             remBalance = 0
+            # getTotalAmount = salePlotDetails.query.filter(and_(
+            #     salegetTotalAmount = salePlotDetails.societyName == plotInfo['societyname'], salegetTotalAmount = salePlotDetails.sectorNo == plotInfo['sectorNo'], salegetTotalAmount = salePlotDetails.plotid == plotInfo['plotNo'])).all()
             getPartner = memberinplots.query.filter(and_(
                 memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorNo'], memberinplots.plotid == plotInfo['plotNo'])).all()
             # check the total sum of cheque amount , amount in cash or payorder amount is equal to plot total amount
