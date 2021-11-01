@@ -40,8 +40,8 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
@@ -506,7 +506,7 @@ def getAllSocietyForppt():
 
 # get sector no for purchase ppt module
 
-@app.route('/getsectorsforppt', methods=['GET'])
+@app.route('/getsectorsforppt', methods=['POST'])
 def getAllSectorsForppt():
     sectorlist = []
     allsectors = request.get_json()
@@ -531,7 +531,6 @@ def getAllplotsInfoFromPPT():
         societyname = allplots['societyname']
         getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
                                                     plottopurchase.societyname == societyname)).all()
-        
         for plot in getplots:
             dict = {"id": plot.id,
                     "societyname": plot.societyname,
@@ -1593,6 +1592,9 @@ def SalePaymentsDetails():
         if checkPermission(getUserId(), "Sale"):
             salePaymentsAPI = request.get_json()
             plotInfo = salePaymentsAPI["plotInfo"]
+            getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyname == plotInfo['societyname'],saleplotdetail.sectorno == plotInfo['sectorNo'],saleplotdetail.plotno == plotInfo['plotNo'])).all()
+            for i in getTotalAmount:
+                plotInfo['plotAmount']=i.plotamount
             amountInCash = salePaymentsAPI['amountInCash']
             chequeAmount = salePaymentsAPI['chequeAmount']
             noOfCheques = salePaymentsAPI['noOfCheques']
@@ -1617,8 +1619,9 @@ def SalePaymentsDetails():
                 completeORNot = "yes"
             updatedValue = 0
             remBalance = 0
-            # getTotalAmount = salePlotDetails.query.filter(and_(
-            #     salegetTotalAmount = salePlotDetails.societyName == plotInfo['societyname'], salegetTotalAmount = salePlotDetails.sectorNo == plotInfo['sectorNo'], salegetTotalAmount = salePlotDetails.plotid == plotInfo['plotNo'])).all()
+            # getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyName == plotInfo['societyname'],saleplotdetail.sectorNo == plotInfo['sectorNo'],saleplotdetail.plotid == plotInfo['plotNo'])).all()
+            # for i in getTotalAmount:
+            #     plotInfo['plotAmount']=i.plotamount
             getPartner = memberinplots.query.filter(and_(
                 memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorNo'], memberinplots.plotid == plotInfo['plotNo'])).all()
             # check the total sum of cheque amount , amount in cash or payorder amount is equal to plot total amount
