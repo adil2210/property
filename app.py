@@ -1,3 +1,4 @@
+print('property')
 from sqlalchemy import and_, or_, not_, update,func
 from sqlalchemy.sql.dml import Update
 from flask import Flask
