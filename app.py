@@ -124,6 +124,7 @@ def SignUp():
         Purchase = signupAPI['permissions']['purchase']
         Sale = signupAPI['permissions']['sale']
         Supper = signupAPI['permissions']['supper']
+        construction = signupAPI['permissions']['construction']
         checkEmail = signup.query.filter_by(email=email).first()
         checkphone = signup.query.filter_by(phoneno=phoneno).first()
         checkcnic = signup.query.filter_by(cnic=cnic).first()
@@ -142,7 +143,7 @@ def SignUp():
                         for i in getId:
                             n=i.id
                         addPerm = permissions(uid=n, Accounts=Accounts, Purchase=Purchase,
-                                            Sale=Sale, Supper=Supper)
+                                            Sale=Sale, Supper=Supper,construction=construction)
                         db.session.add(addPerm)
                         db.session.commit()
                         return make_response("added"), 200
@@ -271,6 +272,7 @@ def login():
             pur=n.Purchase
             s=n.Sale
             su=n.Supper
+            con=n.construction
 
         if pbkdf2_sha256.verify(password,passs):
             session['logged in'] = True
@@ -283,6 +285,7 @@ def login():
                 'Purchase': pur,
                 'Sale': s,
                 'Supper': su,
+                'construction': con,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
             }
             token = (jwt.encode(data, app.config['SECRET_KEY']))

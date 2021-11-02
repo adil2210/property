@@ -28,6 +28,8 @@ class permissions(db.Model):
     Purchase = db.Column(db.Boolean, default=False, nullable=False)
     Sale = db.Column(db.Boolean, default=False, nullable=False)
     Supper = db.Column(db.Boolean, default=False, nullable=False)
+    construction = db.Column(db.Boolean, default=False, nullable=False)
+    
 
 
 
