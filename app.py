@@ -1561,9 +1561,9 @@ def getAllplotsInfoForSalePPTagainst():
         allInfoJson = json.dumps(allInfo)
         return allInfoJson
 
-@app.route('/saleplotdetails', methods=['GET'])
+@app.route('/saleplotdetails', methods=['POST'])
 def salePlotDetails():
-    if (request.method == 'GET'):
+    if (request.method == 'POST'):
         if checkPermission(getUserId() , "Sale"):
             # plotDesc = []
             plotToPurchaseApi = request.get_json()
