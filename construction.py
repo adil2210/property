@@ -75,7 +75,7 @@ def addSupplier():
     filer=addSupplierApi['filer']
     checkSupplier=database.constructionaddsupplier.query.filter(or_(database.constructionaddsupplier.contact==contact ,database.constructionaddsupplier.cnic==cnic)).all()
     if checkSupplier:
-        return make_response("contact no or cnic already exists")
+        return make_response("contact no or cnic already exists"),400
     else:
         supplierAdd=database.constructionaddsupplier(name=name,contact=contact,cnic=cnic,address=address,filer=filer)
         app.db.session.add(supplierAdd)
@@ -106,19 +106,31 @@ def purchaseProduct():
     unit=purchaseProductApi['unit']
     quantity=purchaseProductApi['quantity']
     supplierName=purchaseProductApi['supplierName']
-    paid=purchaseProductApi['paid']
-    paymentMethod=purchaseProductApi['paymentMethod']
+    pay=purchaseProductApi['pay']
     total=quantity*rate
-    checkItem=database.constructionpurchaseproduct.query.filter(database.constructionpurchaseproduct.itemName==itemName).all()
+    if pay==total:
+        paid=True
+    else:
+        paid=False
+    checkItem=database.constructionpurchaseproduct.query.filter(and_(database.constructionpurchaseproduct.itemName==itemName,database.constructionpurchaseproduct.supplierName==supplierName)).all()
     if checkItem:
         for i in checkItem:
             idd=i.id
             totall=i.totalAmount
             quan=i.quantity
-            pay=i.paid
-        stmt = (update(database.constructionpurchaseproduct).where(database.constructionpurchaseproduct==idd).values(itemName=itemName,unit=unit, rate=rate,totalAmount=totall+total,quantity=quan+quantity,paid=pay+paid))
+            payy=i.pay
+        if pay+payy==totall+total:
+            paid=True
+        else:
+            paid=False
+        stmt = (update(database.constructionpurchaseproduct).where(database.constructionpurchaseproduct.id==idd).values(itemName=itemName, unit=unit,rate=rate,totalAmount=totall+total,quantity=quan+quantity,pay=pay+payy,paid=paid))
         app.db.session.execute(stmt)
         app.db.session.commit()
-    
-    
+        return make_response("added"),200
+    else:
+        purchaseProduct=database.constructionpurchaseproduct(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity,pay=pay,paid=paid,supplierName=supplierName)
+        app.db.session.add(purchaseProduct)
+        app.db.session.commit()
+        return make_response("added"),200
+        
     

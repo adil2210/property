@@ -29,9 +29,6 @@ class permissions(db.Model):
     Sale = db.Column(db.Boolean, default=False, nullable=False)
     Supper = db.Column(db.Boolean, default=False, nullable=False)
     construction = db.Column(db.Boolean, default=False, nullable=False)
-    
-
-
 
 
 class addsocietydata(db.Model):
@@ -206,8 +203,8 @@ class constructionaddplot(db.Model):
     structure=db.Column(db.String(1000), default=None, nullable=False)
     material=db.Column(db.Boolean, nullable=False)
     status=db.Column(db.String(1000), default=None, nullable=False)
-    
-    
+
+
 class constructionaddsupplier(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     name=db.Column(db.String(1000),default=None,nullable=False)
@@ -221,16 +218,15 @@ class constructionpurchaseproduct(db.Model):
     itemName=db.Column(db.String(1000),default=None,nullable=False)
     rate=db.Column(db.Float,default=None,nullable=False)
     unit=db.Column(db.String(1000),default=None,nullable=False)
-    quantity=db.Column(db.String(1000),default=None,nullable=False)
+    quantity=db.Column(db.Float,default=None,nullable=False)
     supplierName=db.Column(db.String(1000),default=None,nullable=False)
-    contact=db.Column(db.String(1000),default=None,nullable=False)
     totalAmount=db.Column(db.Float,default=None,nullable=False)
-    paid=db.Column(db.Float,default=None,nullable=False)
-    paymentMethod=db.Column(db.String(1000),default=None,nullable=False)
-    
-    
-    
-    
+    paid=db.Column(db.Boolean,default=None,nullable=False)
+    pay=db.Column(db.Float,default=None,nullable=False)
+
+
+
+
 
 
 
