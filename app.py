@@ -40,8 +40,8 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
@@ -1595,9 +1595,12 @@ def SalePaymentsDetails():
         if checkPermission(getUserId(), "Sale"):
             salePaymentsAPI = request.get_json()
             plotInfo = salePaymentsAPI["plotInfo"]
+            amn=0
             getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyname == plotInfo['societyname'],saleplotdetail.sectorno == plotInfo['sectorNo'],saleplotdetail.plotno == plotInfo['plotNo'])).all()
             for i in getTotalAmount:
-                plotInfo['plotAmount']=i.plotamount
+                amn=i.plotamount
+            print(amn)
+            plotInfo['plotAmount']=amn
             amountInCash = salePaymentsAPI['amountInCash']
             chequeAmount = salePaymentsAPI['chequeAmount']
             noOfCheques = salePaymentsAPI['noOfCheques']
@@ -1635,6 +1638,7 @@ def SalePaymentsDetails():
                 if(tOp != float(tokenAmount)):
                     return make_response("added amount of token is greater or smaller than plot total amount")
             else:
+                print(plotInfo["plotAmount"])
                 if amountInCash or chequeAmount or payorderAmount or onlineTransfer:
                     tOp = checkTotalOfPayments(
                         amountInCash, chequeAmount, payorderAmount, onlineTransfer)
