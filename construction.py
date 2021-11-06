@@ -64,7 +64,7 @@ def addPlot():
         stmt = (update(database.constructionaccount).values(amount=amn+pay))
         app.db.session.execute(stmt)
         app.db.session.commit()
-        addPlot=database.constructionaddplot(societyName=societyName,plotNo=plotNo,sector=sector,plotOwnerName=plotOwnerName,phoneNo=phoneNo,amount=totalAmount,pay=pay,status=s,
+        addPlot=database.constructionaddplot(societyName=societyName,plotNo=plotNo,sectorNo=sector,plotOwnerName=plotOwnerName,phoneNo=phoneNo,amount=totalAmount,pay=pay,status=s,
                                                 streetLocation=streetLocation,categories=categories,totalStories=totalStories,plotSqFeet=plotSqFeet,totalPlotSize=totalPlotSize,ratePerSqFeet=ratePerSqFeet,structure=structure,material=material)
         app.db.session.add(addPlot)
         app.db.session.commit()
@@ -142,10 +142,10 @@ def purchaseProduct():
     total=quantity*rate
     objCa = database.constructionaccount.query.all()
     for i in objCa:
-        huzaifaTotalAmountinAccount = i.amount
-    huzaifaTotalAmountinAccount = huzaifaTotalAmountinAccount-pay
+        totalAmount = i.amount
+    totalAmount = totalAmount-pay
     if pay > 0:
-        stmt = (update(database.constructionaccount).where(database.constructionaccount.accountNo==1234).values(amount = huzaifaTotalAmountinAccount))
+        stmt = (update(database.constructionaccount).values(amount = totalAmount))
         app.db.session.execute(stmt)
         app.db.session.commit()
     if pay==total:
@@ -161,12 +161,12 @@ def purchaseProduct():
         stmt = (update(database.productInventory).where(database.productInventory.id==idd).values(unit=unit,rate=rate,totalAmount=totall+total,quantity=quan+quantity))
         app.db.session.execute(stmt)
         app.db.session.commit()
-        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity , pay = pay , paid = paid)
+        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity , pay = pay , paid = paid,supplierName=supplierName)
         app.db.session.add(add)
         app.db.session.commit()
         return make_response("added"),200
     else:
-        purchaseProduct=database.productInventory(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity,pay=pay,paid=paid,supplierName=supplierName)
+        purchaseProduct=database.productInventory(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity)
         app.db.session.add(purchaseProduct)
         app.db.session.commit()
         return make_response("added"),200
