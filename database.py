@@ -190,6 +190,7 @@ class constructionaddplot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     societyName=db.Column(db.String(1000), default=None, nullable=False)
     plotNo=db.Column(db.String(1000), default=None, nullable=False)
+    sector=db.Column(db.String(1000), default=None, nullable=False)
     plotOwnerName=db.Column(db.String(1000), default=None, nullable=False)
     phoneNo=db.Column(db.String(1000), default=None, nullable=False)
     streetLocation=db.Column(db.String(1000), default=None, nullable=False)
@@ -221,10 +222,19 @@ class constructionpurchaseproduct(db.Model):
     quantity=db.Column(db.Float,default=None,nullable=False)
     supplierName=db.Column(db.String(1000),default=None,nullable=False)
     totalAmount=db.Column(db.Float,default=None,nullable=False)
+    # paid=db.Column(db.Boolean,default=None,nullable=False)
+    # pay=db.Column(db.Float,default=None,nullable=False)
+
+class allPuchasedProductsAndSuppliers(db.Model):
+    id=db.Column(db.Integer, primary_key=True)
+    itemName=db.Column(db.String(1000),default=None,nullable=False)
+    rate=db.Column(db.Float,default=None,nullable=False)
+    unit=db.Column(db.String(1000),default=None,nullable=False)
+    quantity=db.Column(db.Float,default=None,nullable=False)
+    supplierName=db.Column(db.String(1000),default=None,nullable=False)
+    totalAmount=db.Column(db.Float,default=None,nullable=False)
     paid=db.Column(db.Boolean,default=None,nullable=False)
     pay=db.Column(db.Float,default=None,nullable=False)
-
-
 
 
 

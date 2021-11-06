@@ -23,13 +23,14 @@ def addConstructionAccountDetails():
     app.db.session.add(construction)
     app.db.session.commit()
     return make_response("added"),200
-    
+
 # add plot for construction
 @construction.route('/addPlot' ,methods=['POST'])
 def addPlot():
     addPlotApi = request.get_json()
     societyName = addPlotApi["societyName"]
     plotNo = addPlotApi['plotNo']
+    sector = addPlotApi['sector']
     plotOwnerName = addPlotApi['plotOwnerName']
     phoneNo = addPlotApi['phoneNo']
     streetLocation = addPlotApi['streetLocation']
@@ -58,7 +59,7 @@ def addPlot():
         stmt = (update(database.constructionaccount).values(amount=amn+pay))
         app.db.session.execute(stmt)
         app.db.session.commit()
-        addPlot=database.constructionaddplot(societyName=societyName,plotNo=plotNo,plotOwnerName=plotOwnerName,phoneNo=phoneNo,amount=totalAmount,pay=pay,status=s,
+        addPlot=database.constructionaddplot(societyName=societyName,plotNo=plotNo,sector=sector,plotOwnerName=plotOwnerName,phoneNo=phoneNo,amount=totalAmount,pay=pay,status=s,
                                                 streetLocation=streetLocation,categories=categories,totalStories=totalStories,plotSqFeet=plotSqFeet,totalPlotSize=totalPlotSize,ratePerSqFeet=ratePerSqFeet,structure=structure,material=material)
         app.db.session.add(addPlot)
         app.db.session.commit()
@@ -112,20 +113,17 @@ def purchaseProduct():
         paid=True
     else:
         paid=False
-    checkItem=database.constructionpurchaseproduct.query.filter(and_(database.constructionpurchaseproduct.itemName==itemName,database.constructionpurchaseproduct.supplierName==supplierName)).all()
+    checkItem=database.constructionpurchaseproduct.query.filter(and_(database.constructionpurchaseproduct.itemName==itemName)).all()
     if checkItem:
         for i in checkItem:
             idd=i.id
             totall=i.totalAmount
             quan=i.quantity
-            payy=i.pay
-        if pay+payy==totall+total:
-            paid=True
-        else:
-            paid=False
-        stmt = (update(database.constructionpurchaseproduct).where(database.constructionpurchaseproduct.id==idd).values(itemName=itemName, unit=unit,rate=rate,totalAmount=totall+total,quantity=quan+quantity,pay=pay+payy,paid=paid))
+        
+        stmt = (update(database.constructionpurchaseproduct).where(database.constructionpurchaseproduct.id==idd).values(itemName=itemName, unit=unit,rate=rate,totalAmount=totall+total,quantity=quan+quantity))
         app.db.session.execute(stmt)
         app.db.session.commit()
+        
         return make_response("added"),200
     else:
         purchaseProduct=database.constructionpurchaseproduct(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity,pay=pay,paid=paid,supplierName=supplierName)
