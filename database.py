@@ -2,6 +2,7 @@ from sqlalchemy.sql.expression import null
 from werkzeug.security import generate_password_hash
 from app import db
 from flask_sqlalchemy import *
+import datetime
 
 class signup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -178,7 +179,6 @@ class salepaymentmethod(db.Model):
     completeOrNot = db.Column(db.String(100), default=None, nullable=False)
 
 
-# Construction Module Tables
 class constructionaccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     accountNo=db.Column(db.String(1000), default=None, nullable=False)
@@ -190,7 +190,7 @@ class constructionaddplot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     societyName=db.Column(db.String(1000), default=None, nullable=False)
     plotNo=db.Column(db.String(1000), default=None, nullable=False)
-    sector=db.Column(db.String(1000), default=None, nullable=False)
+    sectorNo=db.Column(db.String(1000), default=None, nullable=False)
     plotOwnerName=db.Column(db.String(1000), default=None, nullable=False)
     phoneNo=db.Column(db.String(1000), default=None, nullable=False)
     streetLocation=db.Column(db.String(1000), default=None, nullable=False)
@@ -204,6 +204,8 @@ class constructionaddplot(db.Model):
     structure=db.Column(db.String(1000), default=None, nullable=False)
     material=db.Column(db.Boolean, nullable=False)
     status=db.Column(db.String(1000), default=None, nullable=False)
+    ralation = db.relationship(
+        'materiaAssingedToPlot', backref='constructionaddplot', lazy='dynamic')
 
 
 class constructionaddsupplier(db.Model):
@@ -214,19 +216,18 @@ class constructionaddsupplier(db.Model):
     address=db.Column(db.String(1000),default=None,nullable=False)
     filer=db.Column(db.Boolean,nullable=False)
 
-class constructionpurchaseproduct(db.Model):
+class productInventory(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     itemName=db.Column(db.String(1000),default=None,nullable=False)
     rate=db.Column(db.Float,default=None,nullable=False)
     unit=db.Column(db.String(1000),default=None,nullable=False)
     quantity=db.Column(db.Float,default=None,nullable=False)
-    supplierName=db.Column(db.String(1000),default=None,nullable=False)
     totalAmount=db.Column(db.Float,default=None,nullable=False)
-    # paid=db.Column(db.Boolean,default=None,nullable=False)
-    # pay=db.Column(db.Float,default=None,nullable=False)
+    #remove this line
 
-class allPuchasedProductsAndSuppliers(db.Model):
+class allPurchaseProductAndSup(db.Model):
     id=db.Column(db.Integer, primary_key=True)
+    dateOfPurchase = db.Column(db.DateTime , default=datetime.date.today())
     itemName=db.Column(db.String(1000),default=None,nullable=False)
     rate=db.Column(db.Float,default=None,nullable=False)
     unit=db.Column(db.String(1000),default=None,nullable=False)
@@ -236,6 +237,13 @@ class allPuchasedProductsAndSuppliers(db.Model):
     paid=db.Column(db.Boolean,default=None,nullable=False)
     pay=db.Column(db.Float,default=None,nullable=False)
 
+class materiaAssingedToPlot(db.Model):
+    id=db.Column(db.Integer, primary_key=True)
+    plotId = db.Column(db.Integer, db.ForeignKey('constructionaddplot.id'))
+    itemName=db.Column(db.String(1000),default=None,nullable=False)
+    quantity=db.Column(db.Float,default=None,nullable=False)
+    supplierName=db.Column(db.String(1000),default=None,nullable=False)
+    totalAmount=db.Column(db.Float,default=None,nullable=False)
 
 
 

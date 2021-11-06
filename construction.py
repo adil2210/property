@@ -1,3 +1,4 @@
+from sqlalchemy.orm import query
 import database
 from sqlalchemy import and_, or_, not_, update,func
 from flask import make_response
@@ -7,23 +8,27 @@ import app
 construction = Blueprint('construction', __name__)
 # constructionAddPlot= Blueprint('constructionAddPlotApi', __name__)
 # constructionAddSupplier=Blueprint('constructionAddSupplierApi',__name__)
-# constructionPurchaseProduct=Blueprint('constructionPurchaseProductApi',__name__)
-# constructionPurchaseProduct=Blueprint('constructionPurchaseProductApi',__name__)
+# productInventory=Blueprint('productInventoryApi',__name__)
+# productInventory=Blueprint('productInventoryApi',__name__)
 
 
 
 # add account for construction start up
 @construction.route('/constructionAmount' ,methods=['POST'])
 def addConstructionAccountDetails():
-    constructionDetailsApi = request.get_json()
-    accountNo = constructionDetailsApi["accountNo"]
-    name = constructionDetailsApi['name']
-    amount = constructionDetailsApi['amount']
-    construction=database.constructionaccount(accountNo=accountNo,name=name,amount=amount)
-    app.db.session.add(construction)
-    app.db.session.commit()
-    return make_response("added"),200
+    try:
+        constructionDetailsApi = request.get_json()
+        accountNo = constructionDetailsApi["accountNo"]
+        name = constructionDetailsApi['name']
+        amount = constructionDetailsApi['amount']
+        construction=database.constructionaccount(accountNo=accountNo,name=name,amount=amount)
+        app.db.session.add(construction)
+        app.db.session.commit()
+        return make_response("added"),200
+    except Exception as e:
+        return e
 
+# add plot for construction
 # add plot for construction
 @construction.route('/addPlot' ,methods=['POST'])
 def addPlot():
@@ -64,7 +69,6 @@ def addPlot():
         app.db.session.add(addPlot)
         app.db.session.commit()
         return make_response("added"),200
-
 # add supplier account
 @construction.route('/addSupplier',methods=['Post'])
 def addSupplier():
@@ -83,6 +87,34 @@ def addSupplier():
         app.db.session.commit()
         return make_response("added"),200
 
+@construction.route('/editsupplier',methods=['Post'])
+def editsupplier():
+    try:
+        editSupp = request.get_json()
+        stmt = (update(database.constructionaddsupplier).where(database.constructionaddsupplier.id==editSupp['id']).values(name = editSupp['name'] , contact = editSupp['contact'] , cnic = editSupp['cnic'] , address = editSupp['address'] , filer = editSupp['filer']))
+        app.db.session.execute(stmt)
+        app.db.session.commit()
+        return make_response('edited successfully!'),200
+    except Exception as e:
+        return make_response(e),400
+
+@construction.route('/getAllSuppliers',methods=['GET'])
+def getAllSupplier():
+    temp=[]
+    getSupplier=database.constructionaddsupplier.query.all()
+    for i in getSupplier:
+        dict={
+            "id":i.id,
+            "name":i.name,
+            "contact":i.contact,
+            "cnic":i.cnic,
+            "address":i.address,
+            "filer":i.filer
+        }
+        temp.append(dict)
+    supp = json.dumps(temp)
+    return supp
+
 
 @construction.route('/getSupplierName',methods=['GET'])
 def getSupplierName():
@@ -90,8 +122,7 @@ def getSupplierName():
     getSupplier=database.constructionaddsupplier.query.all()
     for i in getSupplier:
         dict={
-            "name":i.name,
-            "contact":i.contact
+            "name":i.name
         }
         temp.append(dict)
     supp = json.dumps(temp)
@@ -109,26 +140,97 @@ def purchaseProduct():
     supplierName=purchaseProductApi['supplierName']
     pay=purchaseProductApi['pay']
     total=quantity*rate
+    objCa = database.constructionaccount.query.all()
+    for i in objCa:
+        huzaifaTotalAmountinAccount = i.amount
+    huzaifaTotalAmountinAccount = huzaifaTotalAmountinAccount-pay
+    if pay > 0:
+        stmt = (update(database.constructionaccount).where(database.constructionaccount.accountNo==1234).values(amount = huzaifaTotalAmountinAccount))
+        app.db.session.execute(stmt)
+        app.db.session.commit()
     if pay==total:
         paid=True
     else:
         paid=False
-    checkItem=database.constructionpurchaseproduct.query.filter(and_(database.constructionpurchaseproduct.itemName==itemName)).all()
+    checkItem=database.productInventory.query.filter(and_(database.productInventory.itemName==itemName)).all()
     if checkItem:
         for i in checkItem:
             idd=i.id
             totall=i.totalAmount
             quan=i.quantity
-        
-        stmt = (update(database.constructionpurchaseproduct).where(database.constructionpurchaseproduct.id==idd).values(itemName=itemName, unit=unit,rate=rate,totalAmount=totall+total,quantity=quan+quantity))
+        stmt = (update(database.productInventory).where(database.productInventory.id==idd).values(unit=unit,rate=rate,totalAmount=totall+total,quantity=quan+quantity))
         app.db.session.execute(stmt)
         app.db.session.commit()
-        
+        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity , pay = pay , paid = paid)
+        app.db.session.add(add)
+        app.db.session.commit()
         return make_response("added"),200
     else:
-        purchaseProduct=database.constructionpurchaseproduct(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity,pay=pay,paid=paid,supplierName=supplierName)
+        purchaseProduct=database.productInventory(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity,pay=pay,paid=paid,supplierName=supplierName)
         app.db.session.add(purchaseProduct)
         app.db.session.commit()
         return make_response("added"),200
-        
-    
+
+
+@construction.route('/allPlot',methods=['POST'])
+def allPlotsForConstruction():
+    try:
+        allPlotObj = database.constructionaddplot.query.all()
+        list = []
+        for plot in allPlotObj:
+            dict = {
+                "plotId":plot.id,
+                "societyName": plot.societyName,
+                "sectorName":plot.sectorName,
+                "plotNo":plot.plotNo
+            }
+            list.append(dict)
+        newls = json.dumps(list)
+        return newls
+    except Exception as e:
+        return make_response(e),400
+
+@construction.route('/allItems',methods=['GET'])
+def getAllItemName():
+    temp=[]
+    getSupplier=database.productInventory.query.all()
+    for i in getSupplier:
+        dict={
+            "name":i.itemName
+        }
+        temp.append(dict)
+    supp = json.dumps(temp)
+    return supp
+
+
+@construction.route('/materialAssigned',methods=['POST'])
+def materialAssignedToPlot():
+    try:
+        materialAssigned = request.get_json()
+        plotId=materialAssigned['plotId']
+        itemName=materialAssigned['itemName']
+        amount=materialAssigned['amount']
+        quantity=materialAssigned['quantity']
+        supplierName=materialAssigned['supplierName']
+        prodObj = database.productInventory.query.filter(itemName = itemName).all()
+        for i in prodObj:
+            quan = i.quantity
+        if quantity > quan:
+            return make_response('inventory Fails quantity Entered is higher!')
+        try:
+            objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, amount=amount,quantity=quantity,supplierName = supplierName )
+            app.db.session.add(objMa)
+            app.db.session.commit()
+        except Exception as e:
+            return make_response(e),400
+        try:
+            stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).value(quantity=quan-quantity))
+            app.db.session.execute(stmt)
+            app.db.session.commit()
+        except Exception as e:
+            return make_response(e),400
+        return make_response('material Assigned!'),200
+    except Exception as e:
+        return make_response(e),400
+
+
