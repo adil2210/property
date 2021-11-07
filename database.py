@@ -240,6 +240,7 @@ class allPurchaseProductAndSup(db.Model):
     totalAmount=db.Column(db.Float,default=None,nullable=False)
     paid=db.Column(db.Boolean,default=None,nullable=False)
     pay=db.Column(db.Float,default=None,nullable=False)
+    paymentMethod=db.Column(db.String(1000),default=None,nullable=False)
 
 class materiaAssingedToPlot(db.Model):
     id=db.Column(db.Integer, primary_key=True)

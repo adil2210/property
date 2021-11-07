@@ -122,6 +122,7 @@ def getSupplierName():
     getSupplier=database.constructionaddsupplier.query.all()
     for i in getSupplier:
         dict={
+            "id":i.id,
             "name":i.name
         }
         temp.append(dict)
@@ -139,6 +140,8 @@ def purchaseProduct():
     quantity=purchaseProductApi['quantity']
     supplierName=purchaseProductApi['supplierName']
     pay=purchaseProductApi['pay']
+    paymentMethod=purchaseProductApi['paymentMethod']
+
     total=quantity*rate
     objCa = database.constructionaccount.query.all()
     for i in objCa:
@@ -161,11 +164,14 @@ def purchaseProduct():
         stmt = (update(database.productInventory).where(database.productInventory.id==idd).values(unit=unit,rate=rate,totalAmount=totall+total,quantity=quan+quantity))
         app.db.session.execute(stmt)
         app.db.session.commit()
-        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity , pay = pay , paid = paid,supplierName=supplierName)
+        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity ,paymentMethod=paymentMethod, pay = pay , paid = paid,supplierName=supplierName)
         app.db.session.add(add)
         app.db.session.commit()
         return make_response("added"),200
     else:
+        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity ,paymentMethod=paymentMethod, pay = pay , paid = paid,supplierName=supplierName)
+        app.db.session.add(add)
+        app.db.session.commit()
         purchaseProduct=database.productInventory(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity)
         app.db.session.add(purchaseProduct)
         app.db.session.commit()
@@ -209,7 +215,6 @@ def materialAssignedToPlot():
         materialAssigned = request.get_json()
         plotId=materialAssigned['plotId']
         itemName=materialAssigned['itemName']
-        amount=materialAssigned['amount']
         quantity=materialAssigned['quantity']
         inventObj = database.productInventory.query.filter(itemName == itemName ).all()
         for prod in inventObj:
