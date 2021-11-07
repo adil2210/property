@@ -211,26 +211,36 @@ def materialAssignedToPlot():
         itemName=materialAssigned['itemName']
         amount=materialAssigned['amount']
         quantity=materialAssigned['quantity']
+        inventObj = database.productInventory.query.filter(itemName == itemName ).all()
+        for prod in inventObj:
+            rate = prod.rate
+        amount = quantity * rate
         supplierName=materialAssigned['supplierName']
-        prodObj = database.productInventory.query.filter(itemName = itemName).all()
-        for i in prodObj:
-            quan = i.quantity
-        if quantity > quan:
-            return make_response('inventory Fails quantity Entered is higher!')
-        try:
-            objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, amount=amount,quantity=quantity,supplierName = supplierName )
-            app.db.session.add(objMa)
-            app.db.session.commit()
-        except Exception as e:
-            return make_response(e),400
-        try:
-            stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).value(quantity=quan-quantity))
-            app.db.session.execute(stmt)
-            app.db.session.commit()
-        except Exception as e:
-            return make_response(e),400
-        return make_response('material Assigned!'),200
+        checkSupWithItem = database.allPurchaseProductAndSup.query.filter(supplierName == supplierName).all()
+        itm  = 0
+        for i in checkSupWithItem:
+            itm = i.itemName
+        if itm:
+            prodObj = database.productInventory.query.filter(itemName == itemName).all()
+            for i in prodObj:
+                quan = i.quantity
+            if quantity > quan:
+                return make_response('inventory Fails quantity Entered is higher!')
+            try:
+                objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, amount=amount,quantity=quantity,supplierName = supplierName )
+                app.db.session.add(objMa)
+                app.db.session.commit()
+            except Exception as e:
+                return make_response(e),400
+            try:
+                stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).value(quantity=quan-quantity))
+                app.db.session.execute(stmt)
+                app.db.session.commit()
+            except Exception as e:
+                return make_response(e),400
+            return make_response('material Assigned!'),200
+        else:
+            return make_response('this '+itemName+' was not purchased by this '+supplierName),400
     except Exception as e:
         return make_response(e),400
-
 

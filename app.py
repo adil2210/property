@@ -40,8 +40,8 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
@@ -429,13 +429,21 @@ def getAllSectors():
 @app.route('/getplots', methods=['POST'])
 def getAllplots():
     plotlist = []
+    temp=[]
     allplots = request.get_json()
     sectorno = allplots['sectorno']
     societyname = allplots['societyname']
+    getData=plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
+                                                plottopurchase.societyname == societyname)).all()
     getplots = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
                                                 addsocietydata.societyname == societyname)).all()
+    for n in getData:
+        temp.append(n.plotno)
+    print(temp)
     for plot in getplots:
-        plotlist.append(plot.plotno)
+        p=plot.plotno
+        if (p not in temp):
+            plotlist.append(plot.plotno)
     plotJson = json.dumps(plotlist)
     return plotJson
 
@@ -471,20 +479,27 @@ def addPlotToPurchase():
 def getAllDataFromPlotToPurchase():
     if (request.method == 'GET'):
         allData = []
+        temp=[]
         getAllData = plottopurchase.query.all()
+        getData = payments.query.all() 
+        for n in getData:
+            temp.append(n.plotid)
+        print(temp)
         if getAllData:
             for data in getAllData:
-                dict = {"id": data.id,
-                        "societyname": data.societyname,
-                        "sectorno": data.sectorno,
-                        "plotno": data.plotno,
-                        "development": data.development,
-                        "description": data.description,
-                        "plotamount": data.plotamount,
-                        "plotownername": data.plotownername,
-                        "dateTime": data.dateTime,
-                        }
-                allData.append(dict)
+                s=data.id
+                if s not in temp:
+                    dict = {"id": data.id,
+                            "societyname": data.societyname,
+                            "sectorno": data.sectorno,
+                            "plotno": data.plotno,
+                            "development": data.development,
+                            "description": data.description,
+                            "plotamount": data.plotamount,
+                            "plotownername": data.plotownername,
+                            "dateTime": data.dateTime,
+                            }
+                    allData.append(dict)
             plotAllDataJson = json.dumps(allData)
             return plotAllDataJson
         else:
@@ -498,10 +513,16 @@ def getAllDataFromPlotToPurchase():
 @app.route('/getsocietiesnameforppt', methods=['GET'])
 def getAllSocietyForppt():
     societiesName = []
+    temp=[]
+    getData = payments.query.all() 
     allSocietyData = plottopurchase.query.all()
+    for n in getData:
+            temp.append(n.plotid)
     for name in allSocietyData:
+        s=name.id
         if name.societyname not in societiesName:
-            societiesName.append(name.societyname)
+            if s not in temp:
+                societiesName.append(name.societyname)
     print("all society names ", societiesName)
     societyNamePPTJson = json.dumps(societiesName)
     return societyNamePPTJson
@@ -512,13 +533,19 @@ def getAllSocietyForppt():
 @app.route('/getsectorsforppt', methods=['POST'])
 def getAllSectorsForppt():
     sectorlist = []
+    temp=[]
     allsectors = request.get_json()
     societyname = allsectors['societyname']
+    getData = payments.query.all()
     getSectors = plottopurchase.query.filter(
         (plottopurchase.societyname == societyname)).all()
+    for n in getData:
+            temp.append(n.plotid)
     for sector in getSectors:
+        s=sector.id
         if sector.sectorno not in sectorlist:
-            sectorlist.append(sector.sectorno)
+            if s not in temp:
+                sectorlist.append(sector.sectorno)
     sectorpptJson = json.dumps(sectorlist)
     return sectorpptJson
 
@@ -1058,6 +1085,9 @@ def paymentsDetails():
             onlineDescription = paymentsAPI['onlineDescription']
             completeOrNot = "complete"
             print(decodedToken["amount"])
+            data=plottopurchase.query.filter(plottopurchase.societyname==societyName,plottopurchase.sectorno==sectorNo,plottopurchase.plotno==plotNo).all()
+            for i in data:
+                idd=i.id
 
             getTotalPlotAmount = plottopurchase.query.filter(
                 plottopurchase.societyname == societyName, plottopurchase.sectorno == sectorNo, plottopurchase.plotno == plotNo).first()
@@ -1388,7 +1418,7 @@ def paymentsDetails():
                     db.session.add(partnerAmountAgainstPLot)
                     db.session.commit()
 
-            paymentsAdd = payments(societyName=societyName, sectorNo=sectorNo, plotNo=plotNo, amountInCash=amountInCash, chequeAmount=chequeAmount, noOfCheques=noOfCheques, chequeNo=chequeNo, chequeDescription=chequeDescription,
+            paymentsAdd = payments(plotid=idd,societyName=societyName, sectorNo=sectorNo, plotNo=plotNo, amountInCash=amountInCash, chequeAmount=chequeAmount, noOfCheques=noOfCheques, chequeNo=chequeNo, chequeDescription=chequeDescription,
                                    payorderAmount=payorderAmount, noOfPayOrder=noOfPayOrder, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, remaningBalance=remBalance, completeOrNot=completeOrNot,
                                    tokenAmount=tokenAmount, tokenDays=tokenDays, tokenDate=datetime.date.today(), tokenDescription=tokenDescription, taxAmount=taxAmount, taxDescription=taxDescription, onlineTransfer=onlineTransfer, onlineDescription=onlineDescription)
             db.session.add(paymentsAdd)
@@ -1401,7 +1431,7 @@ def paymentsDetails():
 # return indication if token days less than or equal to 3
 
 @app.route('/checkTokenofPurchase', methods=['GET', 'Post'])
-def checkToken():
+def checkTokenOfPurchase():
     return tokenForPurchase(payments)
 
 
@@ -1417,9 +1447,9 @@ def tokenForPurchase(tableName):
         tokenobj = tableName.query.all()
         print(tokenobj)
         for i in tokenobj:
-            print("640 ", i.tokenAmount)
-            day = int(i.tokenDays)
+            print(i.tokenAmount)
             if i.tokenAmount:
+                day = int(i.tokenDays)
                 tokenExp = i.tokenDate + datetime.timedelta(days=day)
                 remDays = tokenExp-i.tokenDate
                 if remDays.days <= 3:
@@ -1434,9 +1464,8 @@ def tokenForPurchase(tableName):
                     tokendict = {
                         'plotNo':  i.plotNo,
                         'societyName':  i.societyName,
-                        'tokenAmount':  i.tokenAmount,
-                        'color': 'black'
-                    }
+                        'tokenAmount':  i.tokenAmount
+                        }
                     tokenlist.append(tokendict)
         tokenlist = json.dumps(tokenlist)
         return tokenlist

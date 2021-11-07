@@ -64,6 +64,9 @@ class plottopurchase(db.Model):
     plotamount = db.Column(db.String(1000), nullable=False)
     plotownername = db.Column(db.String(100), nullable=False)
     dateTime = db.Column(db.String(1000), nullable=False)
+    ralation4 = db.relationship(
+        'payments', backref='plottopurchase', lazy='dynamic')
+
 
 
 class accountsdetail(db.Model):
@@ -109,6 +112,7 @@ class memberinplots(db.Model):
 
 class payments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    plotid = db.Column(db.Integer, db.ForeignKey('plottopurchase.id'))
     societyName = db.Column(db.String(1000), default=None, nullable=False)
     sectorNo = db.Column(db.String(1000), default=None, nullable=False)
     plotNo = db.Column(db.String(1000), default=None, nullable=False)
