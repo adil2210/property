@@ -1622,7 +1622,7 @@ def SalePaymentsDetails():
             salePaymentsAPI = request.get_json()
             plotInfo = salePaymentsAPI["plotInfo"]
             amn=0
-            getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyname == plotInfo['societyname'],saleplotdetail.sectorno == plotInfo['sectorNo'],saleplotdetail.plotno == plotInfo['plotNo'])).all()
+            getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyname == plotInfo['societyname'],saleplotdetail.sectorno == plotInfo['sectorno'],saleplotdetail.plotno == plotInfo['plotno'])).all()
             for i in getTotalAmount:
                 amn=i.plotamount
             print(amn)
