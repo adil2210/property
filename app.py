@@ -1061,7 +1061,7 @@ def paymentsDetails():
             adm_amounts = decodedToken["amount"]
 
             # payments objects
-            societyName = paymentsAPI['societyName']
+            societyName = paymentsAPI['societyname']
             sectorNo = paymentsAPI['sectorNo']
             plotNo = paymentsAPI['plotNo']
             amountInCash = paymentsAPI['amountInCash']
