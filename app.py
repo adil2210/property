@@ -1062,8 +1062,8 @@ def paymentsDetails():
 
             # payments objects
             societyName = paymentsAPI['societyname']
-            sectorNo = paymentsAPI['sectorNo']
-            plotNo = paymentsAPI['plotNo']
+            sectorNo = paymentsAPI['sectorno']
+            plotNo = paymentsAPI['plotno']
             amountInCash = paymentsAPI['amountInCash']
             chequeAmount = paymentsAPI['chequeAmount']
             noOfCheques = paymentsAPI['noOfCheques']
