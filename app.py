@@ -1651,11 +1651,11 @@ def SalePaymentsDetails():
                 completeORNot = "yes"
             updatedValue = 0
             remBalance = 0
-            # getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyName == plotInfo['societyname'],saleplotdetail.sectorNo == plotInfo['sectorNo'],saleplotdetail.plotid == plotInfo['plotNo'])).all()
+            # getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyName == plotInfo['societyname'],saleplotdetail.sectorNo == plotInfo['sectorno'],saleplotdetail.plotid == plotInfo['plotno'])).all()
             # for i in getTotalAmount:
             #     plotInfo['plotAmount']=i.plotamount
             getPartner = memberinplots.query.filter(and_(
-                memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorNo'], memberinplots.plotid == plotInfo['plotNo'])).all()
+                memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorno'], memberinplots.plotid == plotInfo['plotno'])).all()
             # check the total sum of cheque amount , amount in cash or payorder amount is equal to plot total amount
             if tokenAmount:
                 if amountInCash or chequeAmount or payorderAmount or onlineTransfer:
@@ -1718,8 +1718,8 @@ def SalePaymentsDetails():
                                     plotInfo['plotAmount']) - float(tokenAmount)
                                 print("line 841", remBalance)
                                 print(plotInfo['societyname'])
-                                print(plotInfo['sectorNo'])
-                                print(plotInfo['plotNo'])
+                                print(plotInfo['sectorno'])
+                                print(plotInfo['plotno'])
                                 print(plotInfo['plotAmount'])
 
                                 db.session.execute(stmt)
@@ -1741,10 +1741,10 @@ def SalePaymentsDetails():
             else:
                 return make_response("error"),400
             stmt1 = (update(memberinplots). where(and_(
-                memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorNo'], memberinplots.plotid == plotInfo['plotNo'])). values(saleOrNot="yes"))
+                memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorno'], memberinplots.plotid == plotInfo['plotno'])). values(saleOrNot="yes"))
             db.session.execute(stmt1)
             db.session.commit()
-            salePaymentsAdd = salepaymentmethod(plotInfo="Ni", societyName=plotInfo["societyname"], sectorNo=plotInfo["sectorNo"], plotNo=plotInfo["plotNo"], amountInCash=amountInCash, chequeAmount=chequeAmount, noOfCheques=noOfCheques, chequeNo=chequeNo, chequeDescription=chequeDescription,
+            salePaymentsAdd = salepaymentmethod(plotInfo="Ni", societyName=plotInfo["societyname"], sectorNo=plotInfo["sectorno"], plotNo=plotInfo["plotno"], amountInCash=amountInCash, chequeAmount=chequeAmount, noOfCheques=noOfCheques, chequeNo=chequeNo, chequeDescription=chequeDescription,
                                                 payorderAmount=payorderAmount, noOfPayOrder=noOfPayOrder, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, totalAmount=plotInfo[
                                                     "plotAmount"], remaningBalance=remBalance, completeOrNot=completeORNot,
                                                 tokenAmount=tokenAmount, tokenDays=tokenDays, tokenDate=datetime.date.today(), tokenDescription=tokenDescription, taxAmount=taxAmount, taxDescription=taxDescription, onlineTransfer=onlineTransfer, onlineDescription=onlineDescription)
