@@ -43,7 +43,7 @@ def addPlot():
     totalStories = addPlotApi['totalStories']
     plotSqFeet = addPlotApi['plotSqFeet']
     totalPlotSize = addPlotApi['totalPlotSize']
-    ratePerSqFeet = addPlotApi['ratePerSqFeet']
+    ratePerSqFeet = float(addPlotApi['ratePerSqFeet'])
     pay=addPlotApi['pay']
     structure = addPlotApi['structure']
     material = addPlotApi['material']
