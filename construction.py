@@ -202,7 +202,8 @@ def getAllItemName():
     getSupplier=database.productInventory.query.all()
     for i in getSupplier:
         dict={
-            "name":i.itemName
+            "name":i.itemName,
+            "rate":i.rate
         }
         temp.append(dict)
     supp = json.dumps(temp)
