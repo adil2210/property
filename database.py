@@ -247,6 +247,7 @@ class materiaAssingedToPlot(db.Model):
     plotId = db.Column(db.Integer, db.ForeignKey('constructionaddplot.id'))
     itemName=db.Column(db.String(1000),default=None,nullable=False)
     quantity=db.Column(db.Float,default=None,nullable=False)
+    quantityType=db.Column(db.String(1000),default=None,nullable=False)
     supplierName=db.Column(db.String(1000),default=None,nullable=False)
     totalAmount=db.Column(db.Float,default=None,nullable=False)
 

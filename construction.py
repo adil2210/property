@@ -178,11 +178,11 @@ def purchaseProduct():
         return make_response("added"),200
 
 
-@construction.route('/allPlot',methods=['POST'])
+@construction.route('/allPlot',methods=['GET'])
 def allPlotsForConstruction():
     try:
         allPlotObj = database.constructionaddplot.query.all()
-        list = []
+        plist = []
         for plot in allPlotObj:
             dict = {
                 "plotId":plot.id,
@@ -190,11 +190,11 @@ def allPlotsForConstruction():
                 "sectorName":plot.sectorName,
                 "plotNo":plot.plotNo
             }
-            list.append(dict)
-        newls = json.dumps(list)
-        return newls
+            plist.append(dict)
+        newls = json.dumps(plist)
+        return "done"
     except Exception as e:
-        return make_response(e),400
+        return make_response("Error"),400
 
 @construction.route('/allItems',methods=['GET'])
 def getAllItemName():
@@ -217,11 +217,13 @@ def materialAssignedToPlot():
         plotId=materialAssigned['plotId']
         itemName=materialAssigned['itemName']
         quantity=materialAssigned['quantity']
+        quantityType=materialAssigned['quantityType']
+        supplierName=materialAssigned['supplierName']
         inventObj = database.productInventory.query.filter(itemName == itemName ).all()
         for prod in inventObj:
             rate = prod.rate
         amount = quantity * rate
-        supplierName=materialAssigned['supplierName']
+        print(amount)
         checkSupWithItem = database.allPurchaseProductAndSup.query.filter(supplierName == supplierName).all()
         itm  = 0
         for i in checkSupWithItem:
@@ -231,9 +233,9 @@ def materialAssignedToPlot():
             for i in prodObj:
                 quan = i.quantity
             if quantity > quan:
-                return make_response('inventory Fails quantity Entered is higher!')
+                return make_response('inventory Fails quantity Entered is higher!'),400
             try:
-                objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, amount=amount,quantity=quantity,supplierName = supplierName )
+                objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, amount=amount,quantity=quantity,supplierName = supplierName,quantityType=quantityType )
                 app.db.session.add(objMa)
                 app.db.session.commit()
             except Exception as e:
@@ -248,5 +250,6 @@ def materialAssignedToPlot():
         else:
             return make_response('this '+itemName+' was not purchased by this '+supplierName),400
     except Exception as e:
-        return make_response(e),400
+        print (e)
+        return make_response("Error during material assigned"),400
 
