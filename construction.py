@@ -180,22 +180,19 @@ def purchaseProduct():
 
 @construction.route('/allPlot',methods=['GET'])
 def allPlotsForConstruction():
-    try:
-        allPlotObj = database.constructionaddplot.query.all()
-        plist = []
-        for plot in allPlotObj:
-            dict = {
-                "plotId":plot.id,
-                "societyName": plot.societyName,
-                "sectorName":plot.sectorName,
-                "plotNo":plot.plotNo
-            }
-            plist.append(dict)
-        newls = json.dumps(plist)
-        return "done"
-    except Exception as e:
-        return make_response("Error"),400
-
+    allPlotObj = database.constructionaddplot.query.all()
+    plist = []
+    for plot in allPlotObj:
+        dict = {
+            "plotId":plot.id,
+            "societyName": plot.societyName,
+            "sectorNo":plot.sectorNo,
+            "plotNo":plot.plotNo
+        }
+        plist.append(dict)
+    newls = json.dumps(plist)
+    return newls
+    
 @construction.route('/allItems',methods=['GET'])
 def getAllItemName():
     temp=[]
@@ -235,7 +232,7 @@ def materialAssignedToPlot():
             if quantity > quan:
                 return make_response('inventory Fails quantity Entered is higher!'),400
             try:
-                objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, amount=amount,quantity=quantity,supplierName = supplierName,quantityType=quantityType )
+                objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, totalAmount=amount,quantity=quantity,supplierName = supplierName,quantityType=quantityType )
                 app.db.session.add(objMa)
                 app.db.session.commit()
             except Exception as e:
