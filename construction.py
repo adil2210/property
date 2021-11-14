@@ -209,44 +209,33 @@ def getAllItemName():
 
 @construction.route('/materialAssigned',methods=['POST'])
 def materialAssignedToPlot():
-    try:
-        materialAssigned = request.get_json()
-        plotId=materialAssigned['plotId']
-        itemName=materialAssigned['itemName']
-        quantity=materialAssigned['quantity']
-        quantityType=materialAssigned['quantityType']
-        supplierName=materialAssigned['supplierName']
-        inventObj = database.productInventory.query.filter(itemName == itemName ).all()
-        for prod in inventObj:
-            rate = prod.rate
-        amount = quantity * rate
-        print(amount)
-        checkSupWithItem = database.allPurchaseProductAndSup.query.filter(supplierName == supplierName).all()
-        itm  = 0
-        for i in checkSupWithItem:
-            itm = i.itemName
-        if itm:
-            prodObj = database.productInventory.query.filter(itemName == itemName).all()
-            for i in prodObj:
-                quan = i.quantity
-            if quantity > quan:
-                return make_response('inventory Fails quantity Entered is higher!'),400
-            try:
-                objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, totalAmount=amount,quantity=quantity,supplierName = supplierName,quantityType=quantityType )
-                app.db.session.add(objMa)
-                app.db.session.commit()
-            except Exception as e:
-                return make_response(e),400
-            try:
-                stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).value(quantity=quan-quantity))
-                app.db.session.execute(stmt)
-                app.db.session.commit()
-            except Exception as e:
-                return make_response(e),400
-            return make_response('material Assigned!'),200
-        else:
-            return make_response('this '+itemName+' was not purchased by this '+supplierName),400
-    except Exception as e:
-        print (e)
-        return make_response("Error during material assigned"),400
-
+    materialAssigned = request.get_json()
+    plotId=materialAssigned['plotId']
+    itemName=materialAssigned['itemName']
+    quantity=materialAssigned['quantity']
+    quantityType=materialAssigned['quantityType']
+    supplierName=materialAssigned['supplierName']
+    inventObj = database.productInventory.query.filter(itemName == itemName ).all()
+    for prod in inventObj:
+        rate = prod.rate
+    amount = quantity * rate
+    print(amount)
+    checkSupWithItem = database.allPurchaseProductAndSup.query.filter(supplierName == supplierName).all()
+    itm  = 0
+    for i in checkSupWithItem:
+        itm = i.itemName
+    if itm==itemName:
+        prodObj = database.productInventory.query.filter(itemName == itemName).all()
+        for i in prodObj:
+            quan = i.quantity
+        if quantity > quan:
+            return make_response('inventory Fails quantity Entered is higher!'),400
+        objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, totalAmount=amount,quantity=quantity,supplierName = supplierName,quantityType=quantityType )
+        app.db.session.add(objMa)
+        app.db.session.commit()
+        stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).values(quantity=quan-quantity))
+        app.db.session.execute(stmt)
+        app.db.session.commit()
+        return make_response('material Assigned!'),200
+    else:
+        return make_response('this '+itemName+' was not purchased by this '+supplierName),400
