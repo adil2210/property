@@ -462,6 +462,7 @@ def addPlotToPurchase():
             plotownername = plotToPurchaseApi['plotownername']
             getplots = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
                                                 addsocietydata.societyname == societyname,addsocietydata.plotno == plotno)).all()
+            idd=0
             for plot in getplots:
                 idd=plot.id
             addtoPurchase = plottopurchase(uid=idd,societyname=societyname, sectorno=sectorno, plotno=plotno, development=development,
