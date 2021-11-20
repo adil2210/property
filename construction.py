@@ -188,7 +188,7 @@ def allPlotsForConstruction():
             "societyName": plot.societyName,
             "sectorNo":plot.sectorNo,
             "plotNo":plot.plotNo
-        }
+            }
         plist.append(dict)
     newls = json.dumps(plist)
     return newls
@@ -239,3 +239,20 @@ def materialAssignedToPlot():
         return make_response('material Assigned!'),200
     else:
         return make_response('this '+itemName+' was not purchased by this '+supplierName),400
+
+
+@construction.route('/getAllPlot',methods=['GET'])
+def getAllPlotsForConstruction():
+    allPlotObj = database.constructionaddplot.query.all()
+    plist = []
+    for plot in allPlotObj:
+        dict = {
+            "plotId":plot.id,
+            "societyName": plot.societyName,
+            "sectorNo":plot.sectorNo,
+            "plotNo":plot.plotNo,
+            "streetLocation":plot.streetLocation
+            }
+        plist.append(dict)
+    newls = json.dumps(plist)
+    return newls

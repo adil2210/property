@@ -1429,15 +1429,15 @@ def paymentsDetails():
 
 @app.route('/checkTokenofPurchase', methods=['GET', 'Post'])
 def checkTokenOfPurchase():
-    return tokenForPurchase(payments)
+    return tokenForPurchase(payments,"paymentsToken")
 
 
 @app.route('/checkTokenofSale', methods=['GET', 'Post'])
 def checkTokenofSale():
-    return tokenForPurchase(salepaymentmethod)
+    return tokenForPurchase(salepaymentmethod,"saleToken")
 
 
-def tokenForPurchase(tableName):
+def tokenForPurchase(tableName,type):
     if request.method == 'GET':
         tokendict = {}
         tokenlist = []
@@ -1454,16 +1454,16 @@ def tokenForPurchase(tableName):
                         'plotNo':  i.plotNo,
                         'societyName':  i.societyName,
                         'tokenAmount':  i.tokenAmount,
-                        'color': 'red'
+                        'type': type
                     }
                     tokenlist.append(tokendict)
-                else:
-                    tokendict = {
-                        'plotNo':  i.plotNo,
-                        'societyName':  i.societyName,
-                        'tokenAmount':  i.tokenAmount
-                        }
-                    tokenlist.append(tokendict)
+                # else:
+                #     tokendict = {
+                #         'plotNo':  i.plotNo,
+                #         'societyName':  i.societyName,
+                #         'tokenAmount':  i.tokenAmount
+                #         }
+                #     tokenlist.append(tokendict)
         tokenlist = json.dumps(tokenlist)
         return tokenlist
     else:
