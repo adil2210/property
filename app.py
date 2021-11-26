@@ -1,4 +1,4 @@
-from sqlalchemy import and_, or_, not_, update,func
+from sqlalchemy import and_, or_, not_, update,func,delete
 from sqlalchemy.sql.dml import Update
 from flask import Flask
 from flask_cors import CORS
@@ -40,8 +40,8 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
 db = SQLAlchemy(app)
 from database import *
@@ -153,6 +153,15 @@ def SignUp():
                     return make_response("Phone-NO already exist"), 400
             else:
                 return make_response("Email already exist"), 400
+
+# delete user
+@app.route('/deleteUser/<int:id>', methods=['DELETE'])
+def deleteUser(id):
+    if (request.method == 'DELETE'):
+        stmt = (delete(signup).where(signup.id == id))
+        db.session.execute(stmt)
+        db.session.commit()
+    return make_response("ok")
 
 
 # get all users from sign up
