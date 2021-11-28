@@ -252,5 +252,19 @@ class materiaAssingedToPlot(db.Model):
     totalAmount=db.Column(db.Float,default=None,nullable=False)
 
 
+class plotConstructionManagment(db.Model):
+    id=db.Column(db.Integer, primary_key=True)
+    supervisor = db.Column(db.String(1000),default=None,nullable=False)
+    dateStart=db.Column(db.String(1000),default=None,nullable=False)
+    dateFinish=db.Column(db.Float,default=None,nullable=False)
+    plotId=db.Column(db.Integer, db.ForeignKey('constructionaddplot.id'))
+    toDoId=db.Column(db.String(1000),default=None,nullable=False)
+    comment=db.Column(db.String(1000),default=None,nullable=False)
+    violation=db.Column(db.Boolean,nullable=False)
+    name=db.Column(db.String(1000),default=None,nullable=False)
+    dateOfPurchase = db.Column(db.DateTime , default=datetime.date.today())
+
+
+
 
 

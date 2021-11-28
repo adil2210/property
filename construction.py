@@ -256,3 +256,78 @@ def getAllPlotsForConstruction():
         plist.append(dict)
     newls = json.dumps(plist)
     return newls
+
+
+allWorkName={
+    "1":"Demarcation of Site",
+    "2":"STANDARED PROTECTOR COMPACTION TEST & FDT TEST",
+    "3":"Layout of Foundation",
+    "4":"Foundation Basement & Columns & Waterproofing Plot",
+    "5":"Retaining Walls/ Stair Case",
+    "6":"Water Proofing",
+    "7":"Basement Lintels",
+    "8":"Basement Slabs and Beams",
+    "9":"Layout of Foundation Ground Floorwith Set Back",
+    "10":"Construction Of Boundary Wall Upto D.P.C",
+    "11":"Foundation Ground Floor Columns and stair case",
+    "12":"Plint Beams",
+    "13":"D.P.C level with set back Porch Level",
+    "14":"Under Ground Water Tank",
+    "15":"Foundation Ground Floor Lintels Beams (Door & Window)",
+    "16":"Car Porch Slab and Beams",
+    "17":"Fround Floor Slab & Beams, Projection & Stair Case",
+    "18":"Layout of First Floor",
+    "19":"First Floor Lintels Beams (Doors and Windows)	",
+    "20":"First Floor Slab, Beams, Projection & Stairs",
+    "21":"First Floor Parapet Wall",
+    "22":"OverHeaad water Tank",
+    "23":"Top Floor Water Proofing",
+    "24":"Ramp 3 'High From Road Level & lying of 3' Dia Three Pipes",
+    "25":"Septic Tanks",
+    "26":"Internal Drainage(for Rain Water) should be connected to road/drain",
+    "27":"Gate and Boundary Wall and Plot Measuring",
+    "28":"In Case of Corner Plot Boundary wall should be Chamfered	",
+    "29":"********* Finishing (Material/ Colour)",
+    "30":"Gas/ Electric Meters",
+    "31":"Site Clearance"
+}
+
+
+@construction.route('/constructionManagment',methods=['POST'])
+def constructionManagment():
+    constructionManagmentApi = request.get_json()
+    supervisor=constructionManagmentApi['supervisor']
+    dateStart=constructionManagmentApi['dateStart']
+    dateFinish=constructionManagmentApi['dateFinish']
+    plotId=constructionManagmentApi['plotId']
+    toDoId=constructionManagmentApi['toDoId']
+    comment=constructionManagmentApi['comment']
+    violation=constructionManagmentApi['violation']
+    name=constructionManagmentApi['name']
+    pCm = database.plotConstructionManagment(supervisor = supervisor , dateStart = dateStart, dateFinish=dateFinish,plotId=plotId,toDoId = toDoId,comment=comment,violation=violation,name=name )
+    app.db.session.add(pCm)
+    app.db.session.commit()
+
+@construction.route('/toDoGet',methods=['POST'])
+def toDoGet():
+    id=request.get_json()
+    pid=id["pid"]
+
+    idd=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.plotId==pid).all()
+    n=[]
+    for i in idd:
+        toId=i.toDoId
+        name=allWorkName[str(toId)]
+        valueAgainstId=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.toDoId==toId).first()
+        for j in valueAgainstId:
+            dict={
+                "toDoId":j.toDoId,
+                "name":name,
+                "com":j.comment,
+                "vio":j.violation,
+                "name":j.name,
+                "date":j.dateOfPurchase
+                }
+        n.append[dict]
+    data = json.dumps(n)
+    return data

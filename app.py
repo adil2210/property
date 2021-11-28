@@ -163,6 +163,18 @@ def deleteUser(id):
         db.session.commit()
     return make_response("ok")
 
+@app.route('/updateUser', methods=['PUT'])
+def updateUser():
+    if (request.method == 'PUT'):
+        updateObj = request.get_json()
+
+        stmt = (update(signup).where(signup.id == updateObj['id']).values(username = updateObj['username'] , email = updateObj['email'] ,phoneno = updateObj['phoneno'] , cnic = updateObj['cnic']))
+        db.session.execute(stmt)
+        db.session.commit()
+    return make_response("ok")
+
+
+
 
 # get all users from sign up
 @app.route('/getallusers', methods=['GET'])
