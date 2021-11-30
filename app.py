@@ -16,6 +16,7 @@ import pymysql
 import jwt
 import datetime
 from flask_mail import Mail,Message
+from sqlalchemy import create_engine
 import random
 
 import sqlite3 as sql
@@ -35,14 +36,19 @@ app.secret_key = 'ghjc'
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 app.config['TESTING'] = True
-app.config['SQLALCHEMY_POOL_SIZE'] = 1000
-app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
+# app.config['SQLALCHEMY_POOL_SIZE'] = 1000
+# app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 # app.config['SECRET_KEY'] = 'JustDemonstrating'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/propertymanagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_adil:Asdf#123456789@mars.simplecplogin.com/arzmark_propertManagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = '"mysql://arzmark_root:Asdf@123456@127.0.0.1:3306/arzmark_propertManagment'
+engine = create_engine(f'mysql+mysqldb://arzmark_adil:Asdf#123456789@mars.simplecplogin.com/arzmark_propertManagment')
+# engine = create_engine("mysql://" + ("arzmark_adil") + ":" + ("Asdf#123456789") + "@" + ("mars.simplecplogin.com") + "/" + ("arzmark_propertManagment"), 
+#                         pool_size=20, max_overflow=0)
+
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
@@ -56,6 +62,10 @@ PLOT_FOLDER = 'plotimg'
 app.config['PLOT_FOLDER'] = PLOT_FOLDER
 app.config['SECRET_KEY'] = 'JustDemonstrating'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+app.config['SQLALCHEMY_POOL_SIZE'] = 1000
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
+
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
