@@ -109,6 +109,8 @@ def checkPermission(userid,name):
         else:
             return False
 
+
+print("ajsdifansd")
 def getUserId():
     jwtToken = request.headers.get('Authorization')
     cleared_header = jwtToken[7:]
