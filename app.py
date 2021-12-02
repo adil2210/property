@@ -110,7 +110,6 @@ def checkPermission(userid,name):
             return False
 
 
-print("ajsdifansd")
 def getUserId():
     jwtToken = request.headers.get('Authorization')
     cleared_header = jwtToken[7:]
@@ -179,12 +178,20 @@ def deleteUser(id):
 def updateUser():
     if (request.method == 'PUT'):
         updateObj = request.get_json()
-
         stmt = (update(signup).where(signup.id == updateObj['id']).values(username = updateObj['username'] , email = updateObj['email'] ,phoneno = updateObj['phoneno'] , cnic = updateObj['cnic']))
         db.session.execute(stmt)
         db.session.commit()
-    return make_response("ok")
-
+        q = signup.query.filter_by(id=updateObj['id']).all()
+        for i in q:
+            dict = {
+                    "username":i.username,
+                    "email":i.email,
+                    "phoneno":i.phoneno,
+                    "cnic":i.cnic
+                }
+        return dict
+    else:
+        return make_response('using put method for update!') , 400
 
 
 
