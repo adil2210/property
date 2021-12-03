@@ -168,8 +168,9 @@ def SignUp():
 @app.route('/deleteUser/<int:id>', methods=['DELETE'])
 def deleteUser(id):
     if (request.method == 'DELETE'):
-        stmt = (delete(signup).where(signup.id == id))
-        db.session.execute(stmt)
+        # stmt = (delete(signup).where(signup.id == id))
+        stmt = signup.query.get(id)
+        db.session.delete(stmt)
         db.session.commit()
     return make_response("ok")
 
