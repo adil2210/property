@@ -280,8 +280,6 @@ def newPassword():
 
 
 
-
-
 @app.route('/login', methods=['POST'])
 def login():
     if (request.method == 'POST'):
@@ -512,6 +510,38 @@ def addPlotToPurchase():
             return make_response("ok"), 200
         else:
             return make_response("Access Denied")
+
+
+
+@app.route('/getallplotforpurchasesummary', methods=['GET'])
+def getAllDataForPurchaseSummary():
+    if (request.method == 'GET'):
+        allData = []
+        temp=[]
+        getAllData = plottopurchase.query.all()
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "societyname": data.societyname,
+                        "sectorno": data.sectorno,
+                        "plotno": data.plotno,
+                        "development": data.development,
+                        "description": data.description,
+                        "plotamount": data.plotamount,
+                        "plotownername": data.plotownername,
+                        "dateTime": data.dateTime,
+                        }
+                allData.append(dict)
+            plotAllDataJson = json.dumps(allData)
+            return plotAllDataJson
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
+
+
 
 
 #  get all data from plot to purchase table
