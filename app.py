@@ -41,12 +41,8 @@ app.config['TESTING'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://a7ad9e_pmsdb:Asdf#123@mysql5027.site4now.net:3306/db_a7ad9e_pmsdb'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
-# app.config['SQLALCHEMY_DATABASE_URI'] = '"mysql://arzmark_root:Asdf@123456@127.0.0.1:3306/arzmark_propertManagment'
-# engine = create_engine(f'mysql+mysqldb://arzmark_adil:Asdf#123456789@mars.simplecplogin.com/arzmark_propertManagment')
-# engine = create_engine("mysql://" + ("arzmark_adil") + ":" + ("Asdf#123456789") + "@" + ("mars.simplecplogin.com") + "/" + ("arzmark_propertManagment"), 
-#                         pool_size=20, max_overflow=0)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 
 db = SQLAlchemy(app)
 from database import *
@@ -541,6 +537,20 @@ def getAllDataForPurchaseSummary():
 
 
 
+@app.route('/deletePlot/<int:id>', methods=['DELETE'])
+def deletePlot(id):
+    if (request.method == 'DELETE'):
+        # stmt = (delete(signup).where(signup.id == id))
+        getData=plottopurchase.query.filter(plottopurchase.id==id).all()
+        for i in getData:
+            uidd=i.uid
+        stmt = plottopurchase.query.get(id)
+        db.session.delete(stmt)
+        db.session.commit()
+        stmt1 = addsocietydata.query.get(uidd)
+        db.session.delete(stmt1)
+        db.session.commit()
+    return make_response("ok")
 
 
 
