@@ -39,8 +39,8 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_SIZE'] = 1000
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 
 db = SQLAlchemy(app)
@@ -164,10 +164,25 @@ def SignUp():
 def deleteUser(id):
     if (request.method == 'DELETE'):
         # stmt = (delete(signup).where(signup.id == id))
-        stmt = signup.query.get(id)
-        db.session.delete(stmt)
+        # stmt = signup.query.get(id)
+        # db.session.delete(stmt)
+        # db.session.commit()
+        
+        getData=accountsdetail.query.filter(accountsdetail.uid==id).all()
+        uidd=0
+        for i in getData:
+            uidd=i.uid
+        stmt1 = (delete(accountsdetail).where(accountsdetail.uid == id))
+        db.session.execute(stmt1)
         db.session.commit()
-    return make_response("ok")
+        stmt = (delete(signup).where(signup.id == id))
+        # stmt = signup.query.get(id)
+        db.session.execute(stmt)
+        db.session.commit()
+       
+    return make_response("ok"),200
+
+
 
 @app.route('/updateUser', methods=['PUT'])
 def updateUser():
@@ -561,7 +576,7 @@ def getAllDataFromPlotToPurchase():
         allData = []
         temp=[]
         getAllData = plottopurchase.query.all()
-        getData = payments.query.all() 
+        getData = payments.query.all()
         for n in getData:
             temp.append(n.plotid)
         print(temp)
