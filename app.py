@@ -174,7 +174,6 @@ def deleteUser(idd):
         print(id)
         if getData:
             stmt1 = accountsdetail.query.get(id)
-            print(stmt1)
             db.session.delete(stmt1)
             db.session.commit()
         stmt = signup.query.get(idd)
