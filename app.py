@@ -160,26 +160,26 @@ def SignUp():
                 return make_response("Email already exist"), 400
 
 # delete user
-@app.route('/deleteUser/<int:id>', methods=['DELETE'])
-def deleteUser(id):
+@app.route('/deleteUser/<int:idd>', methods=['DELETE'])
+def deleteUser(idd):
     if (request.method == 'DELETE'):
         # stmt = (delete(signup).where(signup.id == id))
         # stmt = signup.query.get(id)
         # db.session.delete(stmt)
         # db.session.commit()
         
-        getData=accountsdetail.query.filter(accountsdetail.uid==id).all()
-        uidd=0
+        getData=accountsdetail.query.filter(accountsdetail.uid==idd).all()
+        id=0
         for i in getData:
-            uidd=i.uid
-        stmt1 = (delete(accountsdetail).where(accountsdetail.uid == id))
-        db.session.execute(stmt1)
+            id=i.id
+        print(id)
+        stmt1 = accountsdetail.query.get(id)
+        print(stmt1)
+        db.session.delete(stmt1)
         db.session.commit()
-        stmt = (delete(signup).where(signup.id == id))
-        # stmt = signup.query.get(id)
-        db.session.execute(stmt)
+        stmt = signup.query.get(idd)
+        db.session.delete(stmt)
         db.session.commit()
-       
     return make_response("ok"),200
 
 
@@ -559,6 +559,7 @@ def deletePlot(id):
         for i in getData:
             uidd=i.uid
         stmt = plottopurchase.query.get(id)
+        print(stmt)
         db.session.delete(stmt)
         db.session.commit()
         stmt1 = addsocietydata.query.get(uidd)
