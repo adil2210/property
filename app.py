@@ -167,16 +167,16 @@ def deleteUser(idd):
         # stmt = signup.query.get(id)
         # db.session.delete(stmt)
         # db.session.commit()
-        
         getData=accountsdetail.query.filter(accountsdetail.uid==idd).all()
         id=0
         for i in getData:
             id=i.id
         print(id)
-        stmt1 = accountsdetail.query.get(id)
-        print(stmt1)
-        db.session.delete(stmt1)
-        db.session.commit()
+        if getData:
+            stmt1 = accountsdetail.query.get(id)
+            print(stmt1)
+            db.session.delete(stmt1)
+            db.session.commit()
         stmt = signup.query.get(idd)
         db.session.delete(stmt)
         db.session.commit()
