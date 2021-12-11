@@ -552,6 +552,22 @@ def getAllDataForPurchaseSummary():
         return make_response("Request in error"), 400
 
 
+@app.route('/updatePlot', methods=['PUT'])
+def updatePlot():
+    if (request.method == 'PUT'):
+        plotObj = request.get_json()
+        stmt = (update(plottopurchase).where(plottopurchase.id == plotObj['id']).values(development = plotObj['development'] , plotamount = plotObj['plotamount'] ,plotownername = plotObj['plotownername']))
+        getData=plottopurchase.query.filter(plottopurchase.id==plotObj['id']).all()
+        for i in getData:
+            uidd=i.uid
+        stmt1 = (update(addsocietydata).where(addsocietydata.id == uidd).values(plottype = plotObj['plottype'] , plotsize = plotObj['plotsize']))
+        db.session.execute(stmt1)
+        db.session.commit()
+        db.session.execute(stmt)
+        db.session.commit()
+        
+        return ("ok"),200
+
 
 @app.route('/deletePlot/<int:id>', methods=['DELETE'])
 def deletePlot(id):
