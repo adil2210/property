@@ -40,7 +40,7 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/property'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 
 db = SQLAlchemy(app)
@@ -522,23 +522,26 @@ def addPlotToPurchase():
 
 
 
-@app.route('/getallplotforpurchasesummary', methods=['GET'])
+
+
+@app.route('/allplotforpurchasesummary', methods=['GET'])
 def getAllDataForPurchaseSummary():
     if (request.method == 'GET'):
         allData = []
         temp=[]
-        getAllData = plottopurchase.query.all()
+        getAllData = db.session.query(plottopurchase,addsocietydata).filter(plottopurchase.uid == addsocietydata.id).all()
+        print(getAllData)
         if getAllData:
             for data in getAllData:
-                dict = {"id": data.id,
-                        "societyname": data.societyname,
-                        "sectorno": data.sectorno,
-                        "plotno": data.plotno,
-                        "development": data.development,
-                        "description": data.description,
-                        "plotamount": data.plotamount,
-                        "plotownername": data.plotownername,
-                        "dateTime": data.dateTime,
+                dict = {"id": data.plottopurchase.id,
+                        "societyname": data.plottopurchase.societyname,
+                        "sectorno": data.plottopurchase.sectorno,
+                        "plotno": data.plottopurchase.plotno,
+                        "development": data.plottopurchase.development,
+                        "plotamount": data.plottopurchase.plotamount,
+                        "plotownername": data.plottopurchase.plotownername,
+                        "plottype":data.addsocietydata.plottype,
+                        "plotsize":data.addsocietydata.plotsize
                         }
                 allData.append(dict)
             plotAllDataJson = json.dumps(allData)
@@ -565,7 +568,6 @@ def deletePlot(id):
         db.session.delete(stmt1)
         db.session.commit()
     return make_response("ok"),200
-
 
 
 #  get all data from plot to purchase table
@@ -609,7 +611,7 @@ def getAllDataFromPlotToPurchase():
 def getAllSocietyForppt():
     societiesName = []
     temp=[]
-    getData = payments.query.all() 
+    getData = payments.query.all()
     allSocietyData = plottopurchase.query.all()
     for n in getData:
             temp.append(n.plotid)
@@ -1518,6 +1520,51 @@ def paymentsDetails():
             return make_response("add"),200
         else:
             return make_response("access denied"),400
+
+
+
+@app.route('/getAllPaymentsDetails', methods=['GET'])
+def getAllDataFromPayments():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = payments.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "plotid": data.plotid,
+                        "societyName": data.societyName,
+                        "sectorNo": data.sectorNo,
+                        "plotNo": data.plotNo,
+                        "amountInCash": data.amountInCash,
+                        "chequeAmount": data.chequeAmount,
+                        "noOfCheques": data.noOfCheques,
+                        "chequeNo": data.chequeNo,
+                        "chequeDescription": data.chequeDescription,
+                        "payorderAmount": data.payorderAmount,
+                        "noOfPayOrder": data.noOfPayOrder,
+                        "payOrderNo": data.payOrderNo,
+                        "payOrderDescription": data.payOrderDescription,
+                        "tokenAmount": data.tokenAmount,
+                        "tokenDays": data.tokenDays,
+                        "tokenDate": data.tokenDate,
+                        "tokenDescription": data.tokenDescription,
+                        "taxDescription": data.taxDescription,
+                        "onlineTransfer": data.onlineTransfer,
+                        "onlineDescription": data.onlineDescription,
+                        "taxAmount": data.taxAmount,
+                        "remaningBalance": data.remaningBalance}
+                allData.append(dict)
+            print(allData)
+            plotAllDataJson = json.dumps(allData)
+            return plotAllDataJson
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
+
 
 
 # return indication if token days less than or equal to 3
