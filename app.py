@@ -1929,12 +1929,79 @@ def updateAccofSale():
     return updateAccountDetailsAfterToken(salepaymentmethod)
 
 
+# def updateAccountDetailsAfterToken(table):
+#     if request.method == 'PUT':
+#         salePaymentsAPI = request.get_json()
+#         societyName = salePaymentsAPI["societyName"]
+#         sectorName = salePaymentsAPI['sectorName']
+#         plotNo = salePaymentsAPI['plotNo']
+#         amountInCash = salePaymentsAPI['amountInCash']
+#         chequeAmount = salePaymentsAPI['chequeAmount']
+#         noOfCheques = salePaymentsAPI['noOfCheques']
+#         chequeNo = salePaymentsAPI['chequeNo']
+#         chequeDescription = salePaymentsAPI['chequeDescription']
+#         payorderAmount = salePaymentsAPI['payorderAmount']
+#         noOfPayOrder = salePaymentsAPI['noOfPayOrder']
+#         payOrderNo = salePaymentsAPI['payOrderNo']
+#         payOrderDescription = salePaymentsAPI['payOrderDescription']
+
+#         getPaymentsWithToken = table.query.filter(and_(
+#             table.societyName == societyName, table.sectorNo == sectorName, table.plotNo == plotNo, table.tokenAmount > 0)).all()
+#         getPartner = memberinplots.query.filter(and_(
+#             memberinplots.societyName == societyName, memberinplots.sectorNo == sectorName, memberinplots.plotid == plotNo)).all()
+#         print(getPaymentsWithToken)
+
+#         if getPaymentsWithToken:
+#             for i in getPaymentsWithToken:
+#                 idd = i.id
+#                 remBalance = i.remaningBalance
+#                 aIc = i.amountInCash
+#                 cA = i.chequeAmount
+#                 pOa = i.payorderAmount
+#                 nOc = i.noOfCheques
+#                 nOp = i.noOfPayOrder
+#             if amountInCash or chequeAmount or payorderAmount:
+#                 tOp = checkTotalOfPayments(
+#                     amountInCash, chequeAmount, payorderAmount)
+#             if(tOp != float(remBalance)):
+#                 return make_response("added amount is greater or smaller than plot total remaning amount")
+#             for mem in getPartner:
+#                 partnerAccId = mem.userid
+#                 percentageInPlot = float(mem.percentageInPlot)
+#                 account = accountsdetail.query.filter(
+#                     accountsdetail.id == partnerAccId).all()
+#                 for i in account:
+#                     pInvestment = float(i.amountToInvest)
+#                 remValue = float((percentageInPlot/100)*float(remBalance))
+#                 if table == payments:
+#                     newInvest = float(pInvestment - remValue)
+#                 else:
+#                     newInvest = float(pInvestment + remValue)
+#                 stmt = (update(accountsdetail). where(
+#                     accountsdetail.id == partnerAccId). values(amountToInvest=newInvest))
+#                 db.session.execute(stmt)
+#                 db.session.commit()
+#                 stmt1 = (update(table). where(
+#                     table.id == idd). values(tokenAmount=0, remaningBalance=0, tokenDays=0, completeOrNot="yes", amountInCash=amountInCash+aIc, noOfCheques=noOfCheques+nOc, chequeNo=chequeNo, chequeDescription=chequeDescription, chequeAmount=chequeAmount+cA,
+#                                              payorderAmount=payorderAmount+pOa, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, noOfPayOrder=noOfPayOrder+nOp))
+#                 db.session.execute(stmt1)
+#                 db.session.commit()
+#         else:
+#             return make_response("no record found!"), 400
+#         return {"Balance is": remBalance}
+
 def updateAccountDetailsAfterToken(table):
     if request.method == 'PUT':
         salePaymentsAPI = request.get_json()
-        societyName = salePaymentsAPI["societyName"]
-        sectorName = salePaymentsAPI['sectorName']
-        plotNo = salePaymentsAPI['plotNo']
+        idInPayment = salePaymentsAPI['id']
+        obj =  table.query.filter(table.id ==  idInPayment ).all()
+        for i in obj:
+            societyName = i.societyName
+            sectorName = i.sectorNo
+            plotNo = i.plotNo
+        # societyName = salePaymentsAPI["societyName"]
+        # sectorName = salePaymentsAPI['sectorName']
+        # plotNo = salePaymentsAPI['plotNo']
         amountInCash = salePaymentsAPI['amountInCash']
         chequeAmount = salePaymentsAPI['chequeAmount']
         noOfCheques = salePaymentsAPI['noOfCheques']
@@ -1944,9 +2011,9 @@ def updateAccountDetailsAfterToken(table):
         noOfPayOrder = salePaymentsAPI['noOfPayOrder']
         payOrderNo = salePaymentsAPI['payOrderNo']
         payOrderDescription = salePaymentsAPI['payOrderDescription']
+        onlineTransfer = salePaymentsAPI['online']
 
-        getPaymentsWithToken = table.query.filter(and_(
-            table.societyName == societyName, table.sectorNo == sectorName, table.plotNo == plotNo, table.tokenAmount > 0)).all()
+        getPaymentsWithToken = table.query.filter(and_(table.id == idInPayment, table.tokenAmount > 0)).all()
         getPartner = memberinplots.query.filter(and_(
             memberinplots.societyName == societyName, memberinplots.sectorNo == sectorName, memberinplots.plotid == plotNo)).all()
         print(getPaymentsWithToken)
@@ -1960,9 +2027,9 @@ def updateAccountDetailsAfterToken(table):
                 pOa = i.payorderAmount
                 nOc = i.noOfCheques
                 nOp = i.noOfPayOrder
-            if amountInCash or chequeAmount or payorderAmount:
+            if amountInCash or chequeAmount or payorderAmount or onlineTransfer:
                 tOp = checkTotalOfPayments(
-                    amountInCash, chequeAmount, payorderAmount)
+                    amountInCash, chequeAmount, payorderAmount ,onlineTransfer)
             if(tOp != float(remBalance)):
                 return make_response("added amount is greater or smaller than plot total remaning amount")
             for mem in getPartner:
@@ -1983,12 +2050,16 @@ def updateAccountDetailsAfterToken(table):
                 db.session.commit()
                 stmt1 = (update(table). where(
                     table.id == idd). values(tokenAmount=0, remaningBalance=0, tokenDays=0, completeOrNot="yes", amountInCash=amountInCash+aIc, noOfCheques=noOfCheques+nOc, chequeNo=chequeNo, chequeDescription=chequeDescription, chequeAmount=chequeAmount+cA,
-                                             payorderAmount=payorderAmount+pOa, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, noOfPayOrder=noOfPayOrder+nOp))
+                                             payorderAmount=payorderAmount+pOa, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription,onlineTransfer = onlineTransfer, noOfPayOrder=noOfPayOrder+nOp))
                 db.session.execute(stmt1)
                 db.session.commit()
         else:
             return make_response("no record found!"), 400
         return {"Balance is": remBalance}
+
+
+
+
 
 
 
