@@ -40,8 +40,8 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 
 db = SQLAlchemy(app)
 from database import *
@@ -1916,6 +1916,45 @@ def SalePaymentsDetails():
             return make_response("access denied")
 
 
+
+@app.route('/getAllSaleDetails', methods=['GET'])
+def getAllDataFromSale():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = salepaymentmethod.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "societyName": data.societyName,
+                        "sectorNo": data.sectorNo,
+                        "plotNo": data.plotNo,
+                        "amountInCash": data.amountInCash,
+                        "chequeAmount": data.chequeAmount,
+                        "noOfCheques": data.noOfCheques,
+                        "chequeNo": data.chequeNo,
+                        "chequeDescription": data.chequeDescription,
+                        "payorderAmount": data.payorderAmount,
+                        "noOfPayOrder": data.noOfPayOrder,
+                        "payOrderNo": data.payOrderNo,
+                        "payOrderDescription": data.payOrderDescription,
+                        "tokenAmount": data.tokenAmount,
+                        "tokenDays": data.tokenDays,
+                        "tokenDate": data.tokenDate,
+                        "tokenDescription": data.tokenDescription,
+                        "taxDescription": data.taxDescription,
+                        "onlineTransfer": data.onlineTransfer,
+                        "onlineDescription": data.onlineDescription,
+                        "taxAmount": data.taxAmount,
+                        "remaningBalance": data.remaningBalance}
+                allData.append(dict)
+            print(allData)
+            plotAllDataJson = json.dumps(allData)
+            return plotAllDataJson
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
 
 
 
