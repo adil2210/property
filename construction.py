@@ -169,7 +169,13 @@ def getConstructionAddPlotData():
 def updateConstructionPlotData():
     if (request.method == 'PUT'):
         updateObj = request.get_json()
-        stmt = (update(database.constructionaddplot).where(database.constructionaddplot.id == updateObj['id']).values(societyName = updateObj['societyName'],plotNo = updateObj['plotNo'],sectorNo = updateObj['sectorNo'],plotOwnerName = updateObj['plotOwnerName'] , phoneNo = updateObj['phoneNo'] ,streetLocation = updateObj['streetLocation'],categories = updateObj['categories'],totalStories = updateObj['totalStories'],plotSqFeet = updateObj['plotSqFeet'],totalPlotSize = updateObj['totalPlotSize'],ratePerSqFeet = updateObj['ratePerSqFeet'],amount = updateObj['amount'],pay = updateObj['pay'],structure = updateObj['structure'],material = updateObj['material']))
+        obj=database.constructionaddplot.query.filter(database.constructionaddplot.id == updateObj['id']).all()
+        for i in obj:
+            p=i.pay
+            amn=i.amount
+        if p>0:
+            pay=p+updateObj['pay']
+        stmt = (update(database.constructionaddplot).where(database.constructionaddplot.id == updateObj['id']).values(societyName = updateObj['societyName'],plotNo = updateObj['plotNo'],sectorNo = updateObj['sectorNo'],plotOwnerName = updateObj['plotOwnerName'] , phoneNo = updateObj['phoneNo'] ,streetLocation = updateObj['streetLocation'],categories = updateObj['categories'],totalStories = updateObj['totalStories'],plotSqFeet = updateObj['plotSqFeet'],totalPlotSize = updateObj['totalPlotSize'],ratePerSqFeet = updateObj['ratePerSqFeet'],amount = amn,pay = pay,structure = updateObj['structure'],material = updateObj['material']))
         app.db.session.execute(stmt)
         app.db.session.commit()
         q = database.constructionaddplot.query.filter_by(id=updateObj['id']).all()
@@ -210,7 +216,7 @@ def deleteConstructionAddPlot(idd):
             id=i.id
         print(id)
         if getData:
-            stmt = database.constructionaddplot.query.get(idd)
+            stmt = database.constructionaddplot.query.get(id)
             app.db.session.delete(stmt)
             app.db.session.commit()
         else:
