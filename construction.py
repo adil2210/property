@@ -28,8 +28,66 @@ def addConstructionAccountDetails():
     except Exception as e:
         return e
 
-# add plot for construction
-# add plot for construction
+@construction.route('/getConstructionAccountData', methods=['GET'])
+def getConstructionAccountData():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = database.constructionaccount.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "accountNo": data.accountNo,
+                        "name": data.name,
+                        "amount": data.amount}
+                allData.append(dict)
+            print(allData)
+            accountData = json.dumps(allData)
+            return accountData
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
+@construction.route('/updateConstructionAccount', methods=['PUT'])
+def updateConstructionAccount():
+    if (request.method == 'PUT'):
+        updateObj = request.get_json()
+        stmt = (update(database.constructionaccount).where(database.constructionaccount.id == updateObj['id']).values(accountNo = updateObj['accountNo'] , name = updateObj['name'] ,amount = updateObj['amount']))
+        app.db.session.execute(stmt)
+        app.db.session.commit()
+        q = database.constructionaccount.query.filter_by(id=updateObj['id']).all()
+        for i in q:
+            dict = {
+                    "accountNo":i.accountNo,
+                    "name":i.name,
+                    "amount":i.amount
+                    }
+        return dict
+    else:
+        return make_response('using put method for update!') , 400
+
+
+@app.route('/deleteConstructionAccount/<int:idd>', methods=['DELETE'])
+def deleteUdeleteConstructionAccountser(idd):
+    if (request.method == 'DELETE'):
+        # stmt = (delete(signup).where(signup.id == id))
+        # stmt = signup.query.get(id)
+        # db.session.delete(stmt)
+        # db.session.commit()
+        getData=database.constructionaccount.query.filter(database.constructionaccount.id==idd).all()
+        id=0
+        for i in getData:
+            id=i.id
+        print(id)
+        if getData:
+            stmt = database.constructionaccount.query.get(idd)
+            app.db.session.delete(stmt)
+            app.db.session.commit()
+        return make_response("ok"),200
+
+
 @construction.route('/addPlot' ,methods=['POST'])
 def addPlot():
     addPlotApi = request.get_json()
@@ -69,6 +127,98 @@ def addPlot():
         app.db.session.add(addPlot)
         app.db.session.commit()
         return make_response("added"),200
+
+
+@construction.route('/getConstructionAddPlotData', methods=['GET'])
+def getConstructionAddPlotData():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = database.constructionaddplot.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "societyName": data.societyName,
+                        "plotNo": data.plotNo,
+                        "sectorNo": data.sectorNo,
+                        "plotOwnerName": data.plotOwnerName,
+                        "phoneNo": data.phoneNo,
+                        "streetLocation": data.streetLocation,
+                        "categories": data.categories,
+                        "totalStories": data.totalStories,
+                        "plotSqFeet": data.plotSqFeet,
+                        "totalPlotSize": data.totalPlotSize,
+                        "ratePerSqFeet": data.ratePerSqFeet,
+                        "amount": data.amount,
+                        "pay": data.pay,
+                        "structure": data.structure,
+                        "material": data.material,
+                        "status": data.status
+                        }
+                allData.append(dict)
+            print(allData)
+            constructionPlotData = json.dumps(allData)
+            return constructionPlotData
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
+@construction.route('/updateConstructionPlotData', methods=['PUT'])
+def updateConstructionPlotData():
+    if (request.method == 'PUT'):
+        updateObj = request.get_json()
+        stmt = (update(database.constructionaddplot).where(database.constructionaddplot.id == updateObj['id']).values(plotOwnerName = updateObj['plotOwnerName'] , phoneNo = updateObj['phoneNo'] ,streetLocation = updateObj['streetLocation'],categories = updateObj['categories'],totalStories = updateObj['totalStories'],plotSqFeet = updateObj['plotSqFeet'],totalPlotSize = updateObj['totalPlotSize'],ratePerSqFeet = updateObj['ratePerSqFeet'],amount = updateObj['amount'],pay = updateObj['pay'],structure = updateObj['structure'],material = updateObj['material']))
+        app.db.session.execute(stmt)
+        app.db.session.commit()
+        q = database.constructionaddplot.query.filter_by(id=updateObj['id']).all()
+        for data in q:
+            dict = {
+                        "societyName": data.societyName,
+                        "plotNo": data.plotNo,
+                        "sectorNo": data.sectorNo,
+                        "plotOwnerName": data.plotOwnerName,
+                        "phoneNo": data.phoneNo,
+                        "streetLocation": data.streetLocation,
+                        "categories": data.categories,
+                        "totalStories": data.totalStories,
+                        "plotSqFeet": data.plotSqFeet,
+                        "totalPlotSize": data.totalPlotSize,
+                        "ratePerSqFeet": data.ratePerSqFeet,
+                        "amount": data.amount,
+                        "pay": data.pay,
+                        "structure": data.structure,
+                        "material": data.material,
+                        "status": data.status
+                    }
+        return dict
+    else:
+        return make_response('using put method for update!') , 400
+
+
+@app.route('/deleteConstructionAddPlot/<int:idd>', methods=['DELETE'])
+def deleteConstructionAddPlot(idd):
+    if (request.method == 'DELETE'):
+        # stmt = (delete(signup).where(signup.id == id))
+        # stmt = signup.query.get(id)
+        # db.session.delete(stmt)
+        # db.session.commit()
+        getData=database.constructionaddplot.query.filter(database.constructionaddplot.id==idd).all()
+        id=0
+        for i in getData:
+            id=i.id
+        print(id)
+        if getData:
+            stmt = database.constructionaddplot.query.get(idd)
+            app.db.session.delete(stmt)
+            app.db.session.commit()
+        else:
+            print("Not such id in database"),400
+        return make_response("ok"),200
+
+
+
 # add supplier account
 @construction.route('/addSupplier',methods=['Post'])
 def addSupplier():
@@ -86,9 +236,36 @@ def addSupplier():
         app.db.session.add(supplierAdd)
         app.db.session.commit()
         return make_response("added"),200
+    
+    
+@construction.route('/getConstructionAddSupplierData', methods=['GET'])
+def getConstructionAddSupplierData():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = database.constructionaddsupplier.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "name": data.name,
+                        "contact": data.contact,
+                        "cnic": data.cnic,
+                        "address": data.address,
+                        "filer": data.filer
+                        }
+                allData.append(dict)
+            print(allData)
+            constructionSupplierData = json.dumps(allData)
+            return constructionSupplierData
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
 
-@construction.route('/editsupplier',methods=['Post'])
-def editsupplier():
+
+
+@construction.route('/updateConstructionAddSupplier',methods=['Post'])
+def updateConstructionAddSupplier():
     try:
         editSupp = request.get_json()
         stmt = (update(database.constructionaddsupplier).where(database.constructionaddsupplier.id==editSupp['id']).values(name = editSupp['name'] , contact = editSupp['contact'] , cnic = editSupp['cnic'] , address = editSupp['address'] , filer = editSupp['filer']))
@@ -97,6 +274,29 @@ def editsupplier():
         return make_response('edited successfully!'),200
     except Exception as e:
         return make_response(e),400
+
+
+@app.route('/deleteConstructionAddSupplier/<int:idd>', methods=['DELETE'])
+def deleteConstructionAddSupplier(idd):
+    if (request.method == 'DELETE'):
+        # stmt = (delete(signup).where(signup.id == id))
+        # stmt = signup.query.get(id)
+        # db.session.delete(stmt)
+        # db.session.commit()
+        getData=database.constructionaddsupplier.query.filter(database.constructionaddsupplier.id==idd).all()
+        id=0
+        for i in getData:
+            id=i.id
+        print(id)
+        if getData:
+            stmt = database.constructionaddsupplier.query.get(idd)
+            app.db.session.delete(stmt)
+            app.db.session.commit()
+        else:
+            print("Not such id in database"),400
+        return make_response("ok"),200
+
+
 
 @construction.route('/getAllSuppliers',methods=['GET'])
 def getAllSupplier():
@@ -177,6 +377,32 @@ def purchaseProduct():
         app.db.session.commit()
         return make_response("added"),200
 
+@construction.route('/getConstructionInventory', methods=['GET'])
+def getConstructionInventory():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = database.productInventory.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "name": data.name,
+                        "contact": data.contact,
+                        "cnic": data.cnic,
+                        "address": data.address,
+                        "filer": data.filer
+                        }
+                allData.append(dict)
+            print(allData)
+            constructionSupplierData = json.dumps(allData)
+            return constructionSupplierData
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
+
 
 @construction.route('/allPlot',methods=['GET'])
 def allPlotsForConstruction():
@@ -192,7 +418,7 @@ def allPlotsForConstruction():
         plist.append(dict)
     newls = json.dumps(plist)
     return newls
-    
+
 @construction.route('/allItems',methods=['GET'])
 def getAllItemName():
     temp=[]

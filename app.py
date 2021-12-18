@@ -40,8 +40,8 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 
 db = SQLAlchemy(app)
 from database import *
@@ -565,7 +565,6 @@ def updatePlot():
         db.session.commit()
         db.session.execute(stmt)
         db.session.commit()
-        
         return ("ok"),200
 
 
@@ -991,7 +990,7 @@ def accountsData():
             print(accDetails)
             if accDetails:
                 print('already have account')
-                return make_response('user already exist!'),400
+                return make_response('already have account'),400
             else:
                 if  chequeAmount or payorderAmount or onlineTransfer or amountInCash:
                     tOp = checkTotalOfPayments(amountInCash,chequeAmount, payorderAmount , onlineTransfer)
@@ -1200,11 +1199,12 @@ def paymentsDetails():
                 idd=i.id
 
             getTotalPlotAmount = plottopurchase.query.filter(
-                plottopurchase.societyname == societyName, plottopurchase.sectorno == sectorNo, plottopurchase.plotno == plotNo).first()
+                plottopurchase.societyname == societyName, plottopurchase.sectorno == sectorNo, plottopurchase.plotno == plotNo).all()
             print(getTotalPlotAmount)
-            totalAmount = getTotalPlotAmount.plotamount
-            # for i in getTotalPlotAmount:
-            #     totalAmount = getTotalPlotAmount.plotamount
+            totalAmount=0
+            # totalAmount = getTotalPlotAmount.plotamount
+            for i in getTotalPlotAmount:
+                totalAmount = i.plotamount
             totalAmount=float(totalAmount)
             remBalance = 0
             if tokenAmount:
@@ -1639,12 +1639,15 @@ def getAllplotsInfoForSalePPT():
         if checkPermission(getUserId(),"Sale"):
             plotlist = []
             allInfo = []
+            temp=[]
             getplots = payments.query.all()
             for plot in getplots:
                 dict = {"societyName": plot.societyName,
                         "sectorNo": plot.sectorNo,
                         "plotNo": plot.plotNo}
                 plotlist.append(dict)
+            getData=salepaymentmethod.query.all()
+            
             for i in plotlist:
                 getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == i['sectorNo'],
                                                         plottopurchase.societyname == i['societyName'],plottopurchase.plotno == i['plotNo'])).all()
@@ -1667,26 +1670,38 @@ def getAllplotsInfoForSalePPT():
                         allInfo.append(dict)
             allInfoJson = json.dumps(allInfo)
             return allInfoJson
-                #     plotlist.append(dict)
-                # plotpptJson = json.dumps(plotlist)
-                # return plotpptJson
-            #     for plot in info:
-            #         dict = {"id": plot.id,
-            #                 "societyname": plot.societyname,
-            #                 "sectorno": plot.sectorno,
-            #                 "plotno": plot.plotno,
-            #                 "development": plot.development,
-            #                 "description": plot.description,
-            #                 "plotamount": plot.plotamount,
-            #                 "plotownername": plot.plotownername
-            #                 }
-            #         #print("697 ",dict)
-            #         if dict not in allInfo:
-            #             allInfo.append(dict)
-            # allInfoJson = json.dumps(allInfo)
-            # return allInfoJson
         else:
             return make_response("Error"), 400
+    #     if (request.method == 'GET'):
+    #     allData = []
+    #     temp=[]
+    #     getAllData = plottopurchase.query.all()
+    #     getData = payments.query.all()
+    #     for n in getData:
+    #         temp.append(n.plotid)
+    #     print(temp)
+    #     if getAllData:
+    #         for data in getAllData:
+    #             s=data.id
+    #             if s not in temp:
+    #                 dict = {"id": data.id,
+    #                         "societyname": data.societyname,
+    #                         "sectorno": data.sectorno,
+    #                         "plotno": data.plotno,
+    #                         "development": data.development,
+    #                         "description": data.description,
+    #                         "plotamount": data.plotamount,
+    #                         "plotownername": data.plotownername,
+    #                         "dateTime": data.dateTime,
+    #                         }
+    #                 allData.append(dict)
+    #         plotAllDataJson = json.dumps(allData)
+    #         return plotAllDataJson
+    #     else:
+    #         return make_response("No data Found"), 400
+    # else:
+    #     return make_response("Request in error"), 400
+
 
 
 @app.route('/getsocietiesnameforsaleppt', methods=['GET'])
@@ -1968,66 +1983,6 @@ def updateAccofSale():
     return updateAccountDetailsAfterToken(salepaymentmethod)
 
 
-# def updateAccountDetailsAfterToken(table):
-#     if request.method == 'PUT':
-#         salePaymentsAPI = request.get_json()
-#         societyName = salePaymentsAPI["societyName"]
-#         sectorName = salePaymentsAPI['sectorName']
-#         plotNo = salePaymentsAPI['plotNo']
-#         amountInCash = salePaymentsAPI['amountInCash']
-#         chequeAmount = salePaymentsAPI['chequeAmount']
-#         noOfCheques = salePaymentsAPI['noOfCheques']
-#         chequeNo = salePaymentsAPI['chequeNo']
-#         chequeDescription = salePaymentsAPI['chequeDescription']
-#         payorderAmount = salePaymentsAPI['payorderAmount']
-#         noOfPayOrder = salePaymentsAPI['noOfPayOrder']
-#         payOrderNo = salePaymentsAPI['payOrderNo']
-#         payOrderDescription = salePaymentsAPI['payOrderDescription']
-
-#         getPaymentsWithToken = table.query.filter(and_(
-#             table.societyName == societyName, table.sectorNo == sectorName, table.plotNo == plotNo, table.tokenAmount > 0)).all()
-#         getPartner = memberinplots.query.filter(and_(
-#             memberinplots.societyName == societyName, memberinplots.sectorNo == sectorName, memberinplots.plotid == plotNo)).all()
-#         print(getPaymentsWithToken)
-
-#         if getPaymentsWithToken:
-#             for i in getPaymentsWithToken:
-#                 idd = i.id
-#                 remBalance = i.remaningBalance
-#                 aIc = i.amountInCash
-#                 cA = i.chequeAmount
-#                 pOa = i.payorderAmount
-#                 nOc = i.noOfCheques
-#                 nOp = i.noOfPayOrder
-#             if amountInCash or chequeAmount or payorderAmount:
-#                 tOp = checkTotalOfPayments(
-#                     amountInCash, chequeAmount, payorderAmount)
-#             if(tOp != float(remBalance)):
-#                 return make_response("added amount is greater or smaller than plot total remaning amount")
-#             for mem in getPartner:
-#                 partnerAccId = mem.userid
-#                 percentageInPlot = float(mem.percentageInPlot)
-#                 account = accountsdetail.query.filter(
-#                     accountsdetail.id == partnerAccId).all()
-#                 for i in account:
-#                     pInvestment = float(i.amountToInvest)
-#                 remValue = float((percentageInPlot/100)*float(remBalance))
-#                 if table == payments:
-#                     newInvest = float(pInvestment - remValue)
-#                 else:
-#                     newInvest = float(pInvestment + remValue)
-#                 stmt = (update(accountsdetail). where(
-#                     accountsdetail.id == partnerAccId). values(amountToInvest=newInvest))
-#                 db.session.execute(stmt)
-#                 db.session.commit()
-#                 stmt1 = (update(table). where(
-#                     table.id == idd). values(tokenAmount=0, remaningBalance=0, tokenDays=0, completeOrNot="yes", amountInCash=amountInCash+aIc, noOfCheques=noOfCheques+nOc, chequeNo=chequeNo, chequeDescription=chequeDescription, chequeAmount=chequeAmount+cA,
-#                                              payorderAmount=payorderAmount+pOa, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, noOfPayOrder=noOfPayOrder+nOp))
-#                 db.session.execute(stmt1)
-#                 db.session.commit()
-#         else:
-#             return make_response("no record found!"), 400
-#         return {"Balance is": remBalance}
 
 def updateAccountDetailsAfterToken(table):
     if request.method == 'PUT':
@@ -2038,7 +1993,7 @@ def updateAccountDetailsAfterToken(table):
             societyName = i.societyName
             sectorName = i.sectorNo
             plotNo = i.plotNo
-        # societyName = salePaymentsAPI["societyName"]
+        # societyName = salePaymentsAPI["societyName"]  
         # sectorName = salePaymentsAPI['sectorName']
         # plotNo = salePaymentsAPI['plotNo']
         amountInCash = salePaymentsAPI['amountInCash']
@@ -2050,7 +2005,7 @@ def updateAccountDetailsAfterToken(table):
         noOfPayOrder = salePaymentsAPI['noOfPayOrder']
         payOrderNo = salePaymentsAPI['payOrderNo']
         payOrderDescription = salePaymentsAPI['payOrderDescription']
-        onlineTransfer = salePaymentsAPI['online']
+        onlineTransfer = salePaymentsAPI['onlineTransfer']
 
         getPaymentsWithToken = table.query.filter(and_(table.id == idInPayment, table.tokenAmount > 0)).all()
         getPartner = memberinplots.query.filter(and_(
@@ -2095,11 +2050,6 @@ def updateAccountDetailsAfterToken(table):
         else:
             return make_response("no record found!"), 400
         return {"Balance is": remBalance}
-
-
-
-
-
 
 
 db.create_all()
