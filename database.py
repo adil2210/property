@@ -178,7 +178,7 @@ class salepaymentmethod(db.Model):
     taxDescription = db.Column(db.String(1000), default=None, nullable=False)
     onlineTransfer = db.Column((db.Float), default=None, nullable=False)
     onlineDescription = db.Column(db.String(1000), default=None, nullable=False)
-    # totalAmount = db.Column(db.Float, default=None, nullable=False)
+    profit = db.Column(db.Float, default=None, nullable=False)
     remaningBalance = db.Column(db.Float, default=None, nullable=False)
     completeOrNot = db.Column(db.String(100), default=None, nullable=False)
 

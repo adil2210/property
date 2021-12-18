@@ -344,6 +344,7 @@ def purchaseProduct():
 
     total=quantity*rate
     objCa = database.constructionaccount.query.all()
+    totalAmount=0
     for i in objCa:
         totalAmount = i.amount
     totalAmount = totalAmount-pay
@@ -385,12 +386,13 @@ def getConstructionInventory():
         print(getAllData)
         if getAllData:
             for data in getAllData:
-                dict = {"id": data.id,
-                        "name": data.name,
-                        "contact": data.contact,
-                        "cnic": data.cnic,
-                        "address": data.address,
-                        "filer": data.filer
+                dict = {
+                        "id": data.id,
+                        "itemName":data.itemName,
+                        "rate": data.rate,
+                        "unit": data.unit,
+                        "quantity": data.quantity,
+                        "totalAmount": data.totalAmount,
                         }
                 allData.append(dict)
             print(allData)
@@ -402,6 +404,19 @@ def getConstructionInventory():
         return make_response("Request in error"), 400
 
 
+@construction.route('/updateInventory',methods=['Post'])
+def updateInventory():
+    try:
+        edit_inventory = request.get_json()
+        r=edit_inventory['rate']
+        q=edit_inventory['quantity']
+        total=r*q
+        stmt = (update(database.productInventory).where(database.productInventory.id==edit_inventory['id']).values(itemName = edit_inventory['itemName'] , rate = edit_inventory['rate'] , unit = edit_inventory['unit'] , quantity = edit_inventory['quantity'] , totalAmount = total))
+        app.db.session.execute(stmt)
+        app.db.session.commit()
+        return make_response('edited successfully!'),200
+    except Exception as e:
+        return make_response(e),400
 
 
 @construction.route('/allPlot',methods=['GET'])

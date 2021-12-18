@@ -1796,10 +1796,13 @@ def SalePaymentsDetails():
             salePaymentsAPI = request.get_json()
             plotInfo = salePaymentsAPI["plotInfo"]
             amn=0
-            getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyname == plotInfo['societyname'],saleplotdetail.sectorno == plotInfo['sectorno'],saleplotdetail.plotno == plotInfo['plotno'])).all()
+            getTotalAmount = saleplotdetail.query.filter(and_(saleplotdetail.societyname == plotInfo['societyname'],saleplotdetail.sectorno == plotInfo['sectorNo'],saleplotdetail.plotno == plotInfo['plotNo'])).all()
             for i in getTotalAmount:
                 amn=i.plotamount
-            print(amn)
+            getTotalAmount = plottopurchase.query.filter(and_(plottopurchase.societyname == plotInfo['societyname'],plottopurchase.sectorno == plotInfo['sectorNo'],plottopurchase.plotno == plotInfo['plotNo'])).all()
+            for i in getTotalAmount:
+                amnBefore=i.plotamount
+            print(amnBefore)
             plotInfo['plotAmount']=amn
             amountInCash = salePaymentsAPI['amountInCash']
             chequeAmount = salePaymentsAPI['chequeAmount']
@@ -1819,6 +1822,8 @@ def SalePaymentsDetails():
             onlineDescription = salePaymentsAPI['onlineDescription']
 
             plotSaleAmount = float(plotInfo["plotAmount"])
+            print(plotSaleAmount)
+            prof=float(amn)-float(amnBefore)
             if tokenAmount:
                 completeORNot = "not"
             else:
@@ -1829,7 +1834,7 @@ def SalePaymentsDetails():
             # for i in getTotalAmount:
             #     plotInfo['plotAmount']=i.plotamount
             getPartner = memberinplots.query.filter(and_(
-                memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorno'], memberinplots.plotid == plotInfo['plotno'])).all()
+                memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorNo'], memberinplots.plotid == plotInfo['plotNo'])).all()
             # check the total sum of cheque amount , amount in cash or payorder amount is equal to plot total amount
             if tokenAmount:
                 if amountInCash or chequeAmount or payorderAmount or onlineTransfer:
@@ -1915,12 +1920,11 @@ def SalePaymentsDetails():
             else:
                 return make_response("error"),400
             stmt1 = (update(memberinplots). where(and_(
-                memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorno'], memberinplots.plotid == plotInfo['plotno'])). values(saleOrNot="yes"))
+                memberinplots.societyName == plotInfo['societyname'], memberinplots.sectorNo == plotInfo['sectorNo'], memberinplots.plotid == plotInfo['plotNo'])). values(saleOrNot="yes"))
             db.session.execute(stmt1)
             db.session.commit()
-            salePaymentsAdd = salepaymentmethod(plotInfo="Ni", societyName=plotInfo["societyname"], sectorNo=plotInfo["sectorno"], plotNo=plotInfo["plotno"], amountInCash=amountInCash, chequeAmount=chequeAmount, noOfCheques=noOfCheques, chequeNo=chequeNo, chequeDescription=chequeDescription,
-                                                payorderAmount=payorderAmount, noOfPayOrder=noOfPayOrder, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, totalAmount=plotInfo[
-                                                    "plotAmount"], remaningBalance=remBalance, completeOrNot=completeORNot,
+            salePaymentsAdd = salepaymentmethod(plotInfo="Ni", societyName=plotInfo["societyname"], sectorNo=plotInfo["sectorNo"], plotNo=plotInfo["plotNo"], amountInCash=amountInCash, chequeAmount=chequeAmount, noOfCheques=noOfCheques, chequeNo=chequeNo, chequeDescription=chequeDescription,
+                                                payorderAmount=payorderAmount, noOfPayOrder=noOfPayOrder, payOrderNo=payOrderNo, payOrderDescription=payOrderDescription, profit=prof, remaningBalance=remBalance, completeOrNot=completeORNot,
                                                 tokenAmount=tokenAmount, tokenDays=tokenDays, tokenDate=datetime.date.today(), tokenDescription=tokenDescription, taxAmount=taxAmount, taxDescription=taxDescription, onlineTransfer=onlineTransfer, onlineDescription=onlineDescription)
             db.session.add(salePaymentsAdd)
             db.session.commit()
