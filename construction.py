@@ -69,7 +69,7 @@ def updateConstructionAccount():
         return make_response('using put method for update!') , 400
 
 
-@app.route('/deleteConstructionAccount/<int:idd>', methods=['DELETE'])
+@construction.route('/deleteConstructionAccount/<int:idd>', methods=['DELETE'])
 def deleteUdeleteConstructionAccountser(idd):
     if (request.method == 'DELETE'):
         # stmt = (delete(signup).where(signup.id == id))
@@ -197,7 +197,7 @@ def updateConstructionPlotData():
         return make_response('using put method for update!') , 400
 
 
-@app.route('/deleteConstructionAddPlot/<int:idd>', methods=['DELETE'])
+@construction.route('/deleteConstructionAddPlot/<int:idd>', methods=['DELETE'])
 def deleteConstructionAddPlot(idd):
     if (request.method == 'DELETE'):
         # stmt = (delete(signup).where(signup.id == id))
@@ -276,7 +276,7 @@ def updateConstructionAddSupplier():
         return make_response(e),400
 
 
-@app.route('/deleteConstructionAddSupplier/<int:idd>', methods=['DELETE'])
+@construction.route('/deleteConstructionAddSupplier/<int:idd>', methods=['DELETE'])
 def deleteConstructionAddSupplier(idd):
     if (request.method == 'DELETE'):
         # stmt = (delete(signup).where(signup.id == id))
