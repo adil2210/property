@@ -43,7 +43,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 db = SQLAlchemy(app)
-
 from database import *
 db.create_all()
 from construction import construction
