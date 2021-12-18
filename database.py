@@ -220,14 +220,6 @@ class constructionaddsupplier(db.Model):
     address=db.Column(db.String(1000),default=None,nullable=False)
     filer=db.Column(db.Boolean,nullable=False)
 
-class productInventory(db.Model):
-    id=db.Column(db.Integer, primary_key=True)
-    itemName=db.Column(db.String(1000),default=None,nullable=False)
-    rate=db.Column(db.Float,default=None,nullable=False)
-    unit=db.Column(db.String(1000),default=None,nullable=False)
-    quantity=db.Column(db.Float,default=None,nullable=False)
-    totalAmount=db.Column(db.Float,default=None,nullable=False)
-    #remove this line
 
 class allPurchaseProductAndSup(db.Model):
     id=db.Column(db.Integer, primary_key=True)
@@ -240,7 +232,18 @@ class allPurchaseProductAndSup(db.Model):
     totalAmount=db.Column(db.Float,default=None,nullable=False)
     paid=db.Column(db.Boolean,default=None,nullable=False)
     pay=db.Column(db.Float,default=None,nullable=False)
+    remainingBalance=db.Column(db.Float,default=None,nullable=False)
     paymentMethod=db.Column(db.String(1000),default=None,nullable=False)
+
+
+class productInventory(db.Model):
+    id=db.Column(db.Integer, primary_key=True)
+    itemName=db.Column(db.String(1000),default=None,nullable=False)
+    rate=db.Column(db.Float,default=None,nullable=False)
+    unit=db.Column(db.String(1000),default=None,nullable=False)
+    quantity=db.Column(db.Float,default=None,nullable=False)
+    #remove this line
+
 
 class materiaAssingedToPlot(db.Model):
     id=db.Column(db.Integer, primary_key=True)

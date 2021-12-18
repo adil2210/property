@@ -169,7 +169,7 @@ def getConstructionAddPlotData():
 def updateConstructionPlotData():
     if (request.method == 'PUT'):
         updateObj = request.get_json()
-        stmt = (update(database.constructionaddplot).where(database.constructionaddplot.id == updateObj['id']).values(plotOwnerName = updateObj['plotOwnerName'] , phoneNo = updateObj['phoneNo'] ,streetLocation = updateObj['streetLocation'],categories = updateObj['categories'],totalStories = updateObj['totalStories'],plotSqFeet = updateObj['plotSqFeet'],totalPlotSize = updateObj['totalPlotSize'],ratePerSqFeet = updateObj['ratePerSqFeet'],amount = updateObj['amount'],pay = updateObj['pay'],structure = updateObj['structure'],material = updateObj['material']))
+        stmt = (update(database.constructionaddplot).where(database.constructionaddplot.id == updateObj['id']).values(societyName = updateObj['societyName'],plotNo = updateObj['plotNo'],sectorNo = updateObj['sectorNo'],plotOwnerName = updateObj['plotOwnerName'] , phoneNo = updateObj['phoneNo'] ,streetLocation = updateObj['streetLocation'],categories = updateObj['categories'],totalStories = updateObj['totalStories'],plotSqFeet = updateObj['plotSqFeet'],totalPlotSize = updateObj['totalPlotSize'],ratePerSqFeet = updateObj['ratePerSqFeet'],amount = updateObj['amount'],pay = updateObj['pay'],structure = updateObj['structure'],material = updateObj['material']))
         app.db.session.execute(stmt)
         app.db.session.commit()
         q = database.constructionaddplot.query.filter_by(id=updateObj['id']).all()
@@ -341,8 +341,10 @@ def purchaseProduct():
     supplierName=purchaseProductApi['supplierName']
     pay=purchaseProductApi['pay']
     paymentMethod=purchaseProductApi['paymentMethod']
+    itemName=itemName.lower()
 
     total=quantity*rate
+    remBalance=total-pay
     objCa = database.constructionaccount.query.all()
     totalAmount=0
     for i in objCa:
@@ -360,29 +362,28 @@ def purchaseProduct():
     if checkItem:
         for i in checkItem:
             idd=i.id
-            totall=i.totalAmount
             quan=i.quantity
-        stmt = (update(database.productInventory).where(database.productInventory.id==idd).values(unit=unit,rate=rate,totalAmount=totall+total,quantity=quan+quantity))
+        stmt = (update(database.productInventory).where(database.productInventory.id==idd).values(unit=unit,rate=rate,quantity=quan+quantity))
         app.db.session.execute(stmt)
         app.db.session.commit()
-        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity ,paymentMethod=paymentMethod, pay = pay , paid = paid,supplierName=supplierName)
+        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity ,paymentMethod=paymentMethod, pay = pay , paid = paid,supplierName=supplierName,remainingBalance=remBalance)
         app.db.session.add(add)
         app.db.session.commit()
         return make_response("added"),200
     else:
-        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity ,paymentMethod=paymentMethod, pay = pay , paid = paid,supplierName=supplierName)
+        add = database.allPurchaseProductAndSup(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity ,paymentMethod=paymentMethod, pay = pay , paid = paid,supplierName=supplierName,remainingBalance=remBalance)
         app.db.session.add(add)
         app.db.session.commit()
-        purchaseProduct=database.productInventory(itemName=itemName, unit=unit,rate=rate,totalAmount=total,quantity=quantity)
+        purchaseProduct=database.productInventory(itemName=itemName, unit=unit,rate=rate,quantity=quantity)
         app.db.session.add(purchaseProduct)
         app.db.session.commit()
         return make_response("added"),200
 
-@construction.route('/getConstructionInventory', methods=['GET'])
-def getConstructionInventory():
+@construction.route('/getConstructionPurchaseProducts', methods=['GET'])
+def getConstructionPurchaseProducts():
     if (request.method == 'GET'):
         allData = []
-        getAllData = database.productInventory.query.all()
+        getAllData = database.allPurchaseProductAndSup.query.all()
         print(getAllData)
         if getAllData:
             for data in getAllData:
@@ -392,31 +393,85 @@ def getConstructionInventory():
                         "rate": data.rate,
                         "unit": data.unit,
                         "quantity": data.quantity,
+                        "supplierName": data.supplierName,
                         "totalAmount": data.totalAmount,
+                        "paid": data.paid,
+                        "pay": data.pay,
+                        "remainingBalance": data.remainingBalance,
+                        "paymentMethod": data.paymentMethod,
+                        "dateOfPurchase": data.dateOfPurchase
                         }
                 allData.append(dict)
             print(allData)
-            constructionSupplierData = json.dumps(allData)
-            return constructionSupplierData
+            constructionPurchaseProductData = json.dumps(allData)
+            return constructionPurchaseProductData
         else:
             return make_response("No data Found"), 400
     else:
         return make_response("Request in error"), 400
 
 
-@construction.route('/updateInventory',methods=['Post'])
+@construction.route('/updateConstructionPurchaseProduct',methods=['PUT'])
 def updateInventory():
-    try:
+    if (request.method == 'PUT'):
         edit_inventory = request.get_json()
         r=edit_inventory['rate']
         q=edit_inventory['quantity']
+        itemName=edit_inventory['itemName']
+        itemName=itemName.lower()
         total=r*q
-        stmt = (update(database.productInventory).where(database.productInventory.id==edit_inventory['id']).values(itemName = edit_inventory['itemName'] , rate = edit_inventory['rate'] , unit = edit_inventory['unit'] , quantity = edit_inventory['quantity'] , totalAmount = total))
+        p=0
+        obj=database.allPurchaseProductAndSup.query.filter(database.allPurchaseProductAndSup.itemName==itemName).all()
+        for i in obj:
+            p=i.pay
+        print(p)
+        pay=p+edit_inventory['pay']
+        remBalance=total-edit_inventory['pay']
+        if edit_inventory['pay']==total:
+            paid=True
+        else:
+            paid=False
+        objCa = database.constructionaccount.query.all()
+        totalAmount=0
+        for i in objCa:
+            totalAmount = i.amount
+        totalAmount = totalAmount-edit_inventory['pay']
+        if edit_inventory['pay'] > 0:
+            stmt = (update(database.constructionaccount).values(amount = totalAmount))
+            app.db.session.execute(stmt)
+            app.db.session.commit()
+        if edit_inventory['pay']==total:
+            paid=True
+        else:
+            paid=False
+        stmt = (update(database.allPurchaseProductAndSup).where(database.allPurchaseProductAndSup.id==edit_inventory['id']).values( itemName =itemName ,rate = edit_inventory['rate'] , unit = edit_inventory['unit'] , quantity = edit_inventory['quantity'],supplierName = edit_inventory['supplierName'] , totalAmount = total,paid=paid, pay = pay,paymentMethod = edit_inventory['paymentMethod'],remainingBalance=remBalance))
         app.db.session.execute(stmt)
         app.db.session.commit()
+        stmt1 = (update(database.productInventory).where(database.productInventory.itemName==edit_inventory['itemName']).values( rate = edit_inventory['rate'] , unit = edit_inventory['unit'] , quantity = edit_inventory['quantity']))
+        app.db.session.execute(stmt1)
+        app.db.session.commit()
         return make_response('edited successfully!'),200
-    except Exception as e:
-        return make_response(e),400
+        
+
+@construction.route('/deleteConstructionPurchaseProduct/<int:idd>', methods=['DELETE'])
+def deleteConstructionPurchaseProduct(idd):
+    if (request.method == 'DELETE'):
+        # stmt = (delete(signup).where(signup.id == id))
+        # stmt = signup.query.get(id)
+        # db.session.delete(stmt)
+        # db.session.commit()
+        getData=database.allPurchaseProductAndSup.query.filter(database.allPurchaseProductAndSup.id==idd).all()
+        id=0
+        for i in getData:
+            id=i.id
+        print(id)
+        if getData:
+            stmt = database.allPurchaseProductAndSup.query.get(idd)
+            app.db.session.delete(stmt)
+            app.db.session.commit()
+        else:
+            print("Not such id in database"),400
+        return make_response("ok"),200
 
 
 @construction.route('/allPlot',methods=['GET'])
