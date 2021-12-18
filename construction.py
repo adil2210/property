@@ -216,7 +216,7 @@ def deleteConstructionAddPlot(idd):
             id=i.id
         print(id)
         if getData:
-            stmt = database.constructionaddplot.query.get(id)
+            stmt = database.constructionaddplot.query.get(idd)
             app.db.session.delete(stmt)
             app.db.session.commit()
         else:
@@ -272,15 +272,12 @@ def getConstructionAddSupplierData():
 
 @construction.route('/updateConstructionAddSupplier',methods=['Post'])
 def updateConstructionAddSupplier():
-    try:
+    if (request.method == 'POST'):
         editSupp = request.get_json()
         stmt = (update(database.constructionaddsupplier).where(database.constructionaddsupplier.id==editSupp['id']).values(name = editSupp['name'] , contact = editSupp['contact'] , cnic = editSupp['cnic'] , address = editSupp['address'] , filer = editSupp['filer']))
         app.db.session.execute(stmt)
         app.db.session.commit()
         return make_response('edited successfully!'),200
-    except Exception as e:
-        return make_response(e),400
-
 
 @construction.route('/deleteConstructionAddSupplier/<int:idd>', methods=['DELETE'])
 def deleteConstructionAddSupplier(idd):
