@@ -429,8 +429,8 @@ def updateInventory():
         for i in obj:
             p=i.pay
         print(p)
-        pay=p+float(num)
-        remBalance=float(total)-float(num)
+        pa=p+float(num)
+        remBalance=float(total)-pa
         if num==total:
             paid=True
         else:
@@ -448,7 +448,7 @@ def updateInventory():
             paid=True
         else:
             paid=False
-        stmt = (update(database.allPurchaseProductAndSup).where(database.allPurchaseProductAndSup.id==edit_inventory['id']).values( itemName =itemName ,rate = edit_inventory['rate'] , unit = edit_inventory['unit'] , quantity = edit_inventory['quantity'],supplierName = edit_inventory['supplierName'] , totalAmount = total,paid=paid, pay = pay,paymentMethod = edit_inventory['paymentMethod'],remainingBalance=remBalance))
+        stmt = (update(database.allPurchaseProductAndSup).where(database.allPurchaseProductAndSup.id==edit_inventory['id']).values( itemName =itemName ,rate = edit_inventory['rate'] , unit = edit_inventory['unit'] , quantity = edit_inventory['quantity'],supplierName = edit_inventory['supplierName'] , totalAmount = total,paid=paid, pay = pa,paymentMethod = edit_inventory['paymentMethod'],remainingBalance=remBalance))
         app.db.session.execute(stmt)
         app.db.session.commit()
         stmt1 = (update(database.productInventory).where(database.productInventory.itemName==edit_inventory['itemName']).values( rate = edit_inventory['rate'] , unit = edit_inventory['unit'] , quantity = edit_inventory['quantity']))
