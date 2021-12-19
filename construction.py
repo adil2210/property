@@ -429,7 +429,7 @@ def updateInventory():
             p=i.pay
         print(p)
         pay=p+float(edit_inventory['pay'])
-        remBalance=total-edit_inventory['pay']
+        remBalance=float(total)-float(edit_inventory['pay'])
         if edit_inventory['pay']==total:
             paid=True
         else:
