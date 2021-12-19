@@ -428,7 +428,7 @@ def updateInventory():
         for i in obj:
             p=i.pay
         print(p)
-        pay=p+edit_inventory['pay']
+        pay=p+float(edit_inventory['pay'])
         remBalance=total-edit_inventory['pay']
         if edit_inventory['pay']==total:
             paid=True
