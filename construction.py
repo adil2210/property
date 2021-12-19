@@ -543,8 +543,8 @@ def materialAssignedToPlot():
             return make_response('this '+itemName+' was not purchased by this '+supplierName),400
 
 
-@construction.route('/getConstructionMaterialAssigned Plot',methods=['GET'])
-def getConstructionMaterialAssigned():
+@construction.route('/getConstructionMaterialAssignedPlot',methods=['GET'])
+def getConstructionMaterialAssignedPlot():
     material_obj = database.materiaAssingedToPlot.query.all()
     allPlots = [] # list of dictionaries
     plot_list=[]
@@ -567,10 +567,26 @@ def getConstructionMaterialAssigned():
                 "plotNo":n.plotNo
                 }
             temp.append(dict)
-        
     material = json.dumps(temp)
     return material
 
+@construction.route('/getMaterialAgainstPlotId',methods=['GET'])
+def getMaterialAgainstPlotId():
+    getDataAgainstPlot=request.get_json()
+    temp=[]
+    material_obj = database.materiaAssingedToPlot.query.filter(database.materiaAssingedToPlot.plotId==getDataAgainstPlot['plotId']).all()
+    for i in material_obj:
+        dict={
+            "id":i.id,
+            "itemName":i.itemName,
+            "quantity":i.quantity,
+            "quantityType":i.quantityType,
+            "supplierName":i.supplierName,
+            "totalAmount":i.totalAmount
+        }
+        temp.append(dict)
+    material = json.dumps(temp)
+    return material
 
 
 
