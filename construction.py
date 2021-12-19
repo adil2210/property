@@ -438,7 +438,7 @@ def updateInventory():
         totalAmount=0
         for i in objCa:
             totalAmount = i.amount
-        totalAmount = totalAmount-edit_inventory['pay']
+        totalAmount = float(totalAmount)-float(edit_inventory['pay'])
         if edit_inventory['pay'] > 0:
             stmt = (update(database.constructionaccount).values(amount = totalAmount))
             app.db.session.execute(stmt)
