@@ -443,7 +443,7 @@ def updateInventory():
             stmt = (update(database.constructionaccount).values(amount = totalAmount))
             app.db.session.execute(stmt)
             app.db.session.commit()
-        if float(edit_inventory['pay'])==total:
+        if float(edit_inventory['pay'])==float(total):
             paid=True
         else:
             paid=False
