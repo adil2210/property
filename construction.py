@@ -270,9 +270,9 @@ def getConstructionAddSupplierData():
 
 
 
-@construction.route('/updateConstructionAddSupplier',methods=['Post'])
+@construction.route('/updateConstructionAddSupplier',methods=['PUT'])
 def updateConstructionAddSupplier():
-    if (request.method == 'POST'):
+    if (request.method == 'PUT'):
         editSupp = request.get_json()
         stmt = (update(database.constructionaddsupplier).where(database.constructionaddsupplier.id==editSupp['id']).values(name = editSupp['name'] , contact = editSupp['contact'] , cnic = editSupp['cnic'] , address = editSupp['address'] , filer = editSupp['filer']))
         app.db.session.execute(stmt)
@@ -424,7 +424,7 @@ def updateInventory():
         itemName=itemName.lower()
         total=r*q
         p=0
-        obj=database.allPurchaseProductAndSup.query.filter(database.allPurchaseProductAndSup.itemName==itemName).all()
+        obj=database.allPurchaseProductAndSup.query.filter(database.allPurchaseProductAndSup.id==edit_inventory['id']).all()
         for i in obj:
             p=i.pay
         print(p)
@@ -454,7 +454,7 @@ def updateInventory():
         app.db.session.execute(stmt1)
         app.db.session.commit()
         return make_response('edited successfully!'),200
-        
+
 
 @construction.route('/deleteConstructionPurchaseProduct/<int:idd>', methods=['DELETE'])
 def deleteConstructionPurchaseProduct(idd):
@@ -508,36 +508,72 @@ def getAllItemName():
 
 @construction.route('/materialAssigned',methods=['POST'])
 def materialAssignedToPlot():
-    materialAssigned = request.get_json()
-    plotId=materialAssigned['plotId']
-    itemName=materialAssigned['itemName']
-    quantity=materialAssigned['quantity']
-    quantityType=materialAssigned['quantityType']
-    supplierName=materialAssigned['supplierName']
-    inventObj = database.productInventory.query.filter(itemName == itemName ).all()
-    for prod in inventObj:
-        rate = prod.rate
-    amount = quantity * rate
-    print(amount)
-    checkSupWithItem = database.allPurchaseProductAndSup.query.filter(supplierName == supplierName).all()
-    itm  = 0
-    for i in checkSupWithItem:
-        itm = i.itemName
-    if itm==itemName:
-        prodObj = database.productInventory.query.filter(itemName == itemName).all()
-        for i in prodObj:
-            quan = i.quantity
-        if quantity > quan:
-            return make_response('inventory Fails quantity Entered is higher!'),400
-        objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, totalAmount=amount,quantity=quantity,supplierName = supplierName,quantityType=quantityType )
-        app.db.session.add(objMa)
-        app.db.session.commit()
-        stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).values(quantity=quan-quantity))
-        app.db.session.execute(stmt)
-        app.db.session.commit()
-        return make_response('material Assigned!'),200
-    else:
-        return make_response('this '+itemName+' was not purchased by this '+supplierName),400
+    if (request.method == 'POST'):
+        materialAssigned = request.get_json()
+        plotId=materialAssigned['plotId']
+        itemName=materialAssigned['itemName']
+        quantity=materialAssigned['quantity']
+        quantityType=materialAssigned['quantityType']
+        supplierName=materialAssigned['supplierName']
+        inventObj = database.productInventory.query.filter(itemName == itemName ).all()
+        for prod in inventObj:
+            rate = prod.rate
+        amount = quantity * rate
+        print(amount)
+        checkSupWithItem = database.allPurchaseProductAndSup.query.filter(supplierName == supplierName).all()
+        itm  = 0
+        for i in checkSupWithItem:
+            if i.itemName==itemName:
+                itm = i.itemName
+        print(itm)
+        if itm==itemName:
+            prodObj = database.productInventory.query.filter(itemName == itemName).all()
+            for i in prodObj:
+                quan = i.quantity
+            if quantity > quan:
+                return make_response('inventory Fails quantity Entered is higher!'),400
+            objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, totalAmount=amount,quantity=quantity,supplierName = supplierName,quantityType=quantityType )
+            app.db.session.add(objMa)
+            app.db.session.commit()
+            stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).values(quantity=quan-quantity))
+            app.db.session.execute(stmt)
+            app.db.session.commit()
+            return make_response('material Assigned!'),200
+        else:
+            return make_response('this '+itemName+' was not purchased by this '+supplierName),400
+
+
+@construction.route('/getConstructionMaterialAssigned Plot',methods=['GET'])
+def getConstructionMaterialAssigned():
+    material_obj = database.materiaAssingedToPlot.query.all()
+    allPlots = [] # list of dictionaries
+    plot_list=[]
+    temp=[]
+    for i in material_obj:
+        # allPlots.append(i.plotId)
+        if i.plotId not in plot_list:
+            plot_list.append(i.plotId)
+            dict={
+                "id":i.id,
+                "plotId":i.plotId
+            }
+            allPlots.append(dict)
+    for i in allPlots:
+        getData=database.constructionaddplot.query.filter(database.constructionaddplot.id==i['plotId']).all()
+        for n in getData:
+            dict={
+                "societyName":n.societyName,
+                "sectorNo":n.sectorNo,
+                "plotNo":n.plotNo
+                }
+            temp.append(dict)
+        
+    material = json.dumps(temp)
+    return material
+
+
+
+
 
 
 @construction.route('/getAllPlot',methods=['GET'])
