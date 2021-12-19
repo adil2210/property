@@ -424,13 +424,14 @@ def updateInventory():
         itemName=itemName.lower()
         total=r*q
         p=0
+        num=float(edit_inventory['pay'])
         obj=database.allPurchaseProductAndSup.query.filter(database.allPurchaseProductAndSup.id==edit_inventory['id']).all()
         for i in obj:
             p=i.pay
         print(p)
-        pay=p+float(edit_inventory['pay'])
-        remBalance=float(total)-float(edit_inventory['pay'])
-        if edit_inventory['pay']==total:
+        pay=p+float(num)
+        remBalance=float(total)-float(num)
+        if num==total:
             paid=True
         else:
             paid=False
@@ -438,12 +439,12 @@ def updateInventory():
         totalAmount=0
         for i in objCa:
             totalAmount = i.amount
-        totalAmount = totalAmount-float(edit_inventory['pay'])
-        if edit_inventory['pay'] > 0:
+        totalAmount = totalAmount-float(num)
+        if num > 0:
             stmt = (update(database.constructionaccount).values(amount = totalAmount))
             app.db.session.execute(stmt)
             app.db.session.commit()
-        if float(edit_inventory['pay'])==float(total):
+        if float(num)==float(total):
             paid=True
         else:
             paid=False
