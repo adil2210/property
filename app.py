@@ -32,7 +32,6 @@ app = Flask(__name__)
 CORS(app)
 mail= Mail(app)
 app.secret_key = 'ghjc'
-
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 app.config['TESTING'] = True
