@@ -62,7 +62,7 @@ def updateConstructionAccount():
             dict = {
                     "accountNo":i.accountNo,
                     "name":i.name,
-                    "amount":i.amount
+                    "amount":i.amount,
                     }
         return dict
     else:

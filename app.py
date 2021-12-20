@@ -1008,6 +1008,7 @@ def accountsData():
         else:
             return make_response("Access Denied")
 
+
 @app.route('/getIndividualAccountDetails/<int:id>', methods=['GET'])
 def getAccountDetails(id):
     if [request.method == 'GET']:
@@ -1016,18 +1017,12 @@ def getAccountDetails(id):
         accDetails = accountsdetail.query.filter(and_(accountsdetail.uid == id)).all()
         print(accDetails)
         for data in accDetails:
-            dict = {"accName": data.accName,
+            dict = {
+                    "id":data.id,
+                    "accName": data.accName,
                     "bankName": data.bankName,
                     "accNo": data.accNo,
-                    "amountToInvest": data.amountToInvest,
-                    "amountInCash": data.amountInCash,
-                    "chequeAmount": data.chequeAmount,
-                    "noOfCheques": data.noOfCheques,
-                    "chequeNo": data.chequeNo,
-                    "payorderAmount": data.payorderAmount,
-                    "noOfPayOrder": data.noOfPayOrder,
-                    "payOrderNo": data.payOrderNo,
-                    "onlineTransfer": data.onlineTransfer
+                    "amountToInvest": data.amountToInvest
                     }
             if dict not in dataList:
                 dataList.append(dict)
@@ -1039,26 +1034,9 @@ def getAccountDetails(id):
 
 
 
-@app.route('/updateaccount', methods=['POST'])
-def updateAccountsData():
-    if (request.method == 'POST'):
-        accountUpdateApi=request.get_json()
-        uid=accountUpdateApi['uid']
-        amount = accountUpdateApi['amount']
-        try:
-            stmt = (update(accountsdetail). where(
-            accountsdetail.uid == uid). values(amountToInvest=amount))
-            db.session.execute(stmt)
-            db.session.commit()
-        except Exception as e:
-            return make_response('cannot update') , 400
-    else:
-        return make_response('method error!')
-
-
 # get all users from accounts table
 
-@app.route('/accountalldata', methods=['GET'])
+@app.route('/getAccountData', methods=['GET'])
 def getsAccountsData():
     if (request.method == 'GET'):
         accountslist = []
@@ -1066,13 +1044,46 @@ def getsAccountsData():
         for user in accountsUsers:
             dict = {"id": user.id,
                     "name": user.name,
-                    "amountToInvest": user.amountToInvest}
-
+                    "bankName": user.bankName,
+                    "amountToInvest": user.amountToInvest,
+                    "accName": user.accName
+                    }
             accountslist.append(dict)
         accountslist = json.dumps(accountslist)
         return accountslist
     else:
         return make_response("Error"), 400
+
+
+@app.route('/updateAccount', methods=['PUT'])
+def updateAccountsData():
+    if (request.method == 'PUT'):
+        updateObj = request.get_json()
+        stmt = (update(accountsdetail). where(
+        accountsdetail.id == updateObj['id']). values(amountToInvest=updateObj['amountToInvest'],name=updateObj['name'],accName=updateObj['accName'],bankName=updateObj['bankName']))
+        db.session.execute(stmt)
+        db.session.commit()
+    else:
+        return make_response('method error!')
+
+@app.route('/deleteConstructionAccount/<int:idd>', methods=['DELETE'])
+def deleteUdeleteConstructionAccountser(idd):
+    if (request.method == 'DELETE'):
+        # stmt = (delete(signup).where(signup.id == id))
+        # stmt = signup.query.get(id)
+        # db.session.delete(stmt)
+        # db.session.commit()
+        getData=accountsdetail.query.filter(accountsdetail.id==idd).all()
+        id=0
+        for i in getData:
+            id=i.id
+        print(id)
+        if getData:
+            stmt = accountsdetail.query.get(idd)
+            app.db.session.delete(stmt)
+            app.db.session.commit()
+        return make_response("ok"),200
+
 
 
 # get partner from account details table
