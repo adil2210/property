@@ -572,11 +572,10 @@ def getConstructionMaterialAssignedPlot():
     material = json.dumps(temp)
     return material
 
-@construction.route('/getMaterialAgainstPlotId',methods=['GET'])
-def getMaterialAgainstPlotId():
-    getDataAgainstPlot=request.get_json()
+@construction.route('/getMaterialAgainstPlotId/<int:idd>',methods=['GET'])
+def getMaterialAgainstPlotId(idd):
     temp=[]
-    material_obj = database.materiaAssingedToPlot.query.filter(database.materiaAssingedToPlot.plotId==getDataAgainstPlot['plotId']).all()
+    material_obj = database.materiaAssingedToPlot.query.filter(database.materiaAssingedToPlot.plotId==idd).all()
     for i in material_obj:
         dict={
             "id":i.id,
@@ -590,6 +589,25 @@ def getMaterialAgainstPlotId():
     material = json.dumps(temp)
     return material
 
+@construction.route('/deleteConstructiongetMaterialAgainstPlot/<int:idd>', methods=['DELETE'])
+def deleteConstructionPurchaseProduct(idd):
+    if (request.method == 'DELETE'):
+        # stmt = (delete(signup).where(signup.id == id))
+        # stmt = signup.query.get(id)
+        # db.session.delete(stmt)
+        # db.session.commit()
+        getData=database.materiaAssingedToPlot.query.filter(database.materiaAssingedToPlot.plotId==idd).all()
+        id=0
+        for i in getData:
+            id=i.id
+        print(id)
+        if getData:
+            stmt = database.materiaAssingedToPlot.query.get(idd)
+            app.db.session.delete(stmt)
+            app.db.session.commit()
+        else:
+            print("Not such id in database"),400
+        return make_response("ok"),200
 
 
 
