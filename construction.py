@@ -600,13 +600,12 @@ def deleteConstructiongetMaterialAgainstPlot(idd):
         id=0
         for i in getData:
             id=i.id
-        print(id)
-        if getData:
-            stmt = database.materiaAssingedToPlot.query.get(idd)
-            app.db.session.delete(stmt)
-            app.db.session.commit()
-        else:
-            print("Not such id in database"),400
+            if getData:
+                stmt = database.materiaAssingedToPlot.query.get(id)
+                app.db.session.delete(stmt)
+                app.db.session.commit()
+            else:
+                print("Not such id in database"),400
         return make_response("ok"),200
 
 
