@@ -563,6 +563,7 @@ def getConstructionMaterialAssignedPlot():
         getData=database.constructionaddplot.query.filter(database.constructionaddplot.id==i['plotId']).all()
         for n in getData:
             dict={
+                "id":n.id,
                 "societyName":n.societyName,
                 "sectorNo":n.sectorNo,
                 "plotNo":n.plotNo
