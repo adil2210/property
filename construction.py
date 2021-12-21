@@ -590,7 +590,7 @@ def getMaterialAgainstPlotId(idd):
     return material
 
 @construction.route('/deleteConstructiongetMaterialAgainstPlot/<int:idd>', methods=['DELETE'])
-def deleteConstructionPurchaseProduct(idd):
+def deleteConstructiongetMaterialAgainstPlot(idd):
     if (request.method == 'DELETE'):
         # stmt = (delete(signup).where(signup.id == id))
         # stmt = signup.query.get(id)
