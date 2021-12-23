@@ -1067,7 +1067,7 @@ def updateAccountsData():
     else:
         return make_response('method error!'),400
 
-@app.route('/deleteConstructionAccount/<int:idd>', methods=['DELETE'])
+@app.route('/deleteAccount/<int:idd>', methods=['DELETE'])
 def deleteUdeleteConstructionAccountser(idd):
     if (request.method == 'DELETE'):
         # stmt = (delete(signup).where(signup.id == id))
