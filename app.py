@@ -39,8 +39,8 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
@@ -1063,8 +1063,9 @@ def updateAccountsData():
         accountsdetail.id == updateObj['id']). values(amountToInvest=updateObj['amountToInvest'],name=updateObj['name'],accName=updateObj['accName'],bankName=updateObj['bankName']))
         db.session.execute(stmt)
         db.session.commit()
+        return make_response("yes"),200
     else:
-        return make_response('method error!')
+        return make_response('method error!'),400
 
 @app.route('/deleteConstructionAccount/<int:idd>', methods=['DELETE'])
 def deleteUdeleteConstructionAccountser(idd):
@@ -1616,13 +1617,14 @@ def tokenForPurchase(tableName,type):
                 day = int(i.tokenDays)
                 tokenExp = i.tokenDate + datetime.timedelta(days=day)
                 remDays = tokenExp-i.tokenDate
-                if remDays.days <= 3:
+                if remDays.days <= 3 and remDays.days>0:
                     tokendict = {
                         'id':i.id,
                         'plotNo':  i.plotNo,
                         'sectorNo':  i.sectorNo,
                         'societyName':  i.societyName,
                         'tokenAmount':  i.tokenAmount,
+                        'remainingBalance':  i.remainingBalance,
                         'type': type
                     }
                     tokenlist.append(tokendict)
@@ -1974,7 +1976,8 @@ def getAllDataFromSale():
                         "onlineTransfer": data.onlineTransfer,
                         "onlineDescription": data.onlineDescription,
                         "taxAmount": data.taxAmount,
-                        "remaningBalance": data.remaningBalance}
+                        "remaningBalance": data.remaningBalance,
+                        "profit": data.profit}
                 allData.append(dict)
             print(allData)
             plotAllDataJson = json.dumps(allData)
