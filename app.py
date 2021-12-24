@@ -39,8 +39,8 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
@@ -725,35 +725,49 @@ def saleInfoAgainstSocietyNameSectorNo(societyname,sectorno):
     if [request.method == 'POST']:
         plotlist = []
         temp=[]
+        temp1=[]
+        partners=[]
+        admin=[]
         # allplots = request.get_json()
         getData = payments.query.filter(and_( payments.societyName == societyname,payments.sectorNo == sectorno)).all()
         for plot in getData:
             dict = {"plotno": plot.plotNo}
             temp.append(dict)
+        getData1=""
+        getData2=""
+        getData3=""
         for i in temp:
             getData1 = plottopurchase.query.filter(and_(plottopurchase.sectorno == sectorno,
                                                     plottopurchase.societyname == societyname,plottopurchase.plotno == i['plotno'])).all()
             getData2 = addsocietydata.query.filter(and_(addsocietydata.sectorno == sectorno,
                                                     addsocietydata.societyname == societyname,addsocietydata.plotno == i['plotno'])).all()
+            getData3 = memberinplots.query.filter(and_(memberinplots.sectorNo == sectorno,
+                                                    memberinplots.societyName == societyname,memberinplots.plotid == i['plotno'])).all()
+        for n in getData3:
+            if n.role == "partner":
+                partners.append(n.names)
+            if n.role == "admin":
+                admin.append(n.names)
         for plot,plot1 in zip(getData1,getData2):
             dict = {"id": plot.id,
-                    "societyname": plot.societyname,
-                    "sectorno": plot.sectorno,
-                    "plotno": plot.plotno,
-                    "plotamount": plot.plotamount,
-                    "description1": plot1.description,
-                    "plotownername": plot.plotownername,
-                    "dateTime": plot.dateTime,
-                    "plotsize": plot1.plotsize,
-                    "plottype": plot1.plottype,
-                    "description": plot1.description
-                    }
+                "societyname": plot.societyname,
+                "sectorno": plot.sectorno,
+                "plotno": plot.plotno,
+                "plotamount": plot.plotamount,
+                "description1": plot1.description,
+                "plotownername": plot.plotownername,
+                "dateTime": plot.dateTime,
+                "plotsize": plot1.plotsize,
+                "plottype": plot1.plottype,
+                "description": plot1.description,
+                "partner":partners,
+                "admin":admin
+                }
             plotlist.append(dict)
         plotpptJson = json.dumps(plotlist)
         return plotpptJson
     else:
         return make_response("Error"), 400
-
 
 
 @app.route('/moregetplotsforppt/<int:id>', methods=['GET'])
