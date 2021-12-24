@@ -1624,7 +1624,7 @@ def tokenForPurchase(tableName,type):
                         'sectorNo':  i.sectorNo,
                         'societyName':  i.societyName,
                         'tokenAmount':  i.tokenAmount,
-                        'remainingBalance':  i.remainingBalance,
+                        'remainingBalance':  i.remaningBalance,
                         'type': type
                     }
                     tokenlist.append(tokendict)
