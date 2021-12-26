@@ -39,8 +39,8 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
@@ -971,8 +971,6 @@ def accountsData():
     if (request.method == 'POST'):
         if checkPermission(getUserId() , "Accounts"):
             accountsApi = request.get_json()
-            #name = accountsApi['name']
-            #contactNo = accountsApi['contactNo']
             uid = accountsApi['uid']
             user = signup.query.filter_by(id = uid).all()
             for use in user:
@@ -981,8 +979,6 @@ def accountsData():
                 role = use.role
                 name = use.username
                 contactNo = use.phoneno
-            #cnic = accountsApi['cnic']
-            #role = accountsApi['role']
             accName = accountsApi['accName']
             bankName = accountsApi['bankName']
             accNo = accountsApi['accNo']
@@ -1084,10 +1080,6 @@ def updateAccountsData():
 @app.route('/deleteAccount/<int:idd>', methods=['DELETE'])
 def deleteUdeleteConstructionAccountser(idd):
     if (request.method == 'DELETE'):
-        # stmt = (delete(signup).where(signup.id == id))
-        # stmt = signup.query.get(id)
-        # db.session.delete(stmt)
-        # db.session.commit()
         getData=accountsdetail.query.filter(accountsdetail.id==idd).all()
         id=0
         for i in getData:
@@ -1182,13 +1174,6 @@ def paymentsDetails():
     if (request.method == 'POST'):
         print(getUserId())
         if checkPermission(getUserId(),"Purchase"):
-            # jwtToken = request.headers.get('Authorization')
-            # cleared_header = jwtToken[7:]
-            # print("token is:", cleared_header)
-            # decodedToken = jwt.decode(
-            #     cleared_header, app.config['SECRET_KEY'], algorithms=["HS256"])
-            # print("decode token id is : ", decodedToken["id"])
-
             paymentsAPI = request.get_json()
             decodedToken=paymentsAPI['admData']
 
@@ -1642,13 +1627,6 @@ def tokenForPurchase(tableName,type):
                         'type': type
                     }
                     tokenlist.append(tokendict)
-                # else:
-                #     tokendict = {
-                #         'plotNo':  i.plotNo,
-                #         'societyName':  i.societyName,
-                #         'tokenAmount':  i.tokenAmount
-                #         }
-                #     tokenlist.append(tokendict)
         tokenlist = json.dumps(tokenlist)
         return tokenlist
     else:
@@ -1697,36 +1675,7 @@ def getAllplotsInfoForSalePPT():
             return allInfoJson
         else:
             return make_response("Error"), 400
-    #     if (request.method == 'GET'):
-    #     allData = []
-    #     temp=[]
-    #     getAllData = plottopurchase.query.all()
-    #     getData = payments.query.all()
-    #     for n in getData:
-    #         temp.append(n.plotid)
-    #     print(temp)
-    #     if getAllData:
-    #         for data in getAllData:
-    #             s=data.id
-    #             if s not in temp:
-    #                 dict = {"id": data.id,
-    #                         "societyname": data.societyname,
-    #                         "sectorno": data.sectorno,
-    #                         "plotno": data.plotno,
-    #                         "development": data.development,
-    #                         "description": data.description,
-    #                         "plotamount": data.plotamount,
-    #                         "plotownername": data.plotownername,
-    #                         "dateTime": data.dateTime,
-    #                         }
-    #                 allData.append(dict)
-    #         plotAllDataJson = json.dumps(allData)
-    #         return plotAllDataJson
-    #     else:
-    #         return make_response("No data Found"), 400
-    # else:
-    #     return make_response("Request in error"), 400
-
+    
 
 
 @app.route('/getsocietiesnameforsaleppt', methods=['GET'])
@@ -2156,7 +2105,7 @@ def updateAccountDetailsAfterToken(table):
             societyName = i.societyName
             sectorName = i.sectorNo
             plotNo = i.plotNo
-        # societyName = salePaymentsAPI["societyName"]  
+        # societyName = salePaymentsAPI["societyName"]
         # sectorName = salePaymentsAPI['sectorName']
         # plotNo = salePaymentsAPI['plotNo']
         amountInCash = salePaymentsAPI['amountInCash']
