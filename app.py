@@ -2002,6 +2002,139 @@ def getAllDataFromSale():
         return make_response("Request in error"), 400
 
 
+# @app.route('/deletePaymentAddedPlot/<int:idd>', methods=['DELETE'])
+# def deletePaymentAddedPlot(idd):
+#     if (request.method == 'DELETE'):
+#         # stmt = (delete(signup).where(signup.id == id))
+#         # stmt = signup.query.get(id)
+#         # db.session.delete(stmt)
+#         # db.session.commit()
+#         getData=payments.query.filter(payments.id==idd).all()
+#         id=0
+#         for i in getData:
+#             id=i.id
+#         print(id)
+#         if getData:
+#             stmt1 = payments.query.get(id)
+#             db.session.delete(stmt1)
+#             db.session.commit()
+#         return make_response("ok"),200
+
+
+# @app.route('/deleteSaleAddedPlots/<int:idd>', methods=['DELETE'])
+# def deleteSaleAddedPlots(idd):
+#     if (request.method == 'DELETE'):
+#         # stmt = (delete(signup).where(signup.id == id))
+#         # stmt = signup.query.get(id)
+#         # db.session.delete(stmt)
+#         # db.session.commit()
+#         temp=[]
+#         getData=salepaymentmethod.query.filter(salepaymentmethod.id==idd).all()
+#         id=0
+#         society=""
+#         sector=""
+#         plot=""
+#         print(getData)
+#         for i in getData:
+#             id=i.id
+#             society=i.societyName
+#             sector=i.sectorNo
+#             plot=i.plotNo
+#             temp.append(i)
+#         print(temp)
+#         print(id)
+#         # if getData:
+#         #     stmt1 = salepaymentmethod.query.get(id)
+#         #     db.session.delete(stmt1)
+#         #     db.session.commit()
+#         stmt = saleplotdetail.query.filter(saleplotdetail.societyname==society,saleplotdetail.sectorno==sector,saleplotdetail.plotno==plot)
+#         db.session.delete(stmt)
+#         db.session.commit()
+#     return make_response("ok"),200
+
+@app.route('/getAllSaleDetailsReview/<int:idd>', methods=['GET'])
+def getAllSaleDetailsReview(idd):
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = salepaymentmethod.query.filter(salepaymentmethod.id==idd).all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "societyName": data.societyName,
+                        "sectorNo": data.sectorNo,
+                        "plotNo": data.plotNo,
+                        "amountInCash": data.amountInCash,
+                        "chequeAmount": data.chequeAmount,
+                        "noOfCheques": data.noOfCheques,
+                        "chequeNo": data.chequeNo,
+                        "chequeDescription": data.chequeDescription,
+                        "payorderAmount": data.payorderAmount,
+                        "noOfPayOrder": data.noOfPayOrder,
+                        "payOrderNo": data.payOrderNo,
+                        "payOrderDescription": data.payOrderDescription,
+                        "tokenAmount": data.tokenAmount,
+                        "tokenDays": data.tokenDays,
+                        "tokenDate": data.tokenDate,
+                        "tokenDescription": data.tokenDescription,
+                        "taxDescription": data.taxDescription,
+                        "onlineTransfer": data.onlineTransfer,
+                        "onlineDescription": data.onlineDescription,
+                        "taxAmount": data.taxAmount,
+                        "remaningBalance": data.remaningBalance,
+                        "profit": data.profit}
+                allData.append(dict)
+            print(allData)
+            plotAllDataJson = json.dumps(allData)
+            return plotAllDataJson
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
+
+@app.route('/getAllPaymentsDetailsReview/<int:idd>', methods=['GET'])
+def getAllPaymentsDetailsReview(idd):
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = payments.query.filter(payments.id==idd)
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "plotid": data.plotid,
+                        "societyName": data.societyName,
+                        "sectorNo": data.sectorNo,
+                        "plotNo": data.plotNo,
+                        "amountInCash": data.amountInCash,
+                        "chequeAmount": data.chequeAmount,
+                        "noOfCheques": data.noOfCheques,
+                        "chequeNo": data.chequeNo,
+                        "chequeDescription": data.chequeDescription,
+                        "payorderAmount": data.payorderAmount,
+                        "noOfPayOrder": data.noOfPayOrder,
+                        "payOrderNo": data.payOrderNo,
+                        "payOrderDescription": data.payOrderDescription,
+                        "tokenAmount": data.tokenAmount,
+                        "tokenDays": data.tokenDays,
+                        "tokenDate": data.tokenDate,
+                        "tokenDescription": data.tokenDescription,
+                        "taxDescription": data.taxDescription,
+                        "onlineTransfer": data.onlineTransfer,
+                        "onlineDescription": data.onlineDescription,
+                        "taxAmount": data.taxAmount,
+                        "remaningBalance": data.remaningBalance}
+                allData.append(dict)
+            print(allData)
+            plotAllDataJson = json.dumps(allData)
+            return plotAllDataJson
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+
 
 @app.route('/updateForPurchase', methods=['PUT'])
 def updateAcc():
@@ -2041,7 +2174,6 @@ def updateAccountDetailsAfterToken(table):
         getPartner = memberinplots.query.filter(and_(
             memberinplots.societyName == societyName, memberinplots.sectorNo == sectorName, memberinplots.plotid == plotNo)).all()
         print(getPaymentsWithToken)
-
         if getPaymentsWithToken:
             for i in getPaymentsWithToken:
                 idd = i.id
