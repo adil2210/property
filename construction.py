@@ -688,24 +688,27 @@ def toDoGet(idd):
     # pid=id["pid"]
     getData=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.plotId==idd).all()
     n=[]
+    temp=[]
     print(idd)
     for i in getData:
         toId=i.toDoId
         name=allWorkName[str(toId)]
         print(name)
         print(toId)
-        valueAgainstId=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.toDoId==toId).all()
+        # valueAgainstId=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.toDoId==toId).all()
         # print(valueAgainstId)
         for j in getData:
-            dict={
-                "toDoId":j.toDoId,
-                "descName":name,
-                "com":j.comment,
-                "vio":j.violation,
-                "name":j.name,
-                "date":j.dateOfPurchase
-                }
-            n.append(dict)
+            if j.toDoId not in temp:
+                temp.append(j.toDoId)
+                dict={
+                    "toDoId":j.toDoId,
+                    "descName":name,
+                    "com":j.comment,
+                    "vio":j.violation,
+                    "name":j.name,
+                    "date":j.dateOfPurchase
+                    }
+                n.append(dict)
     data = json.dumps(n)
     return data
 
