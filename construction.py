@@ -704,3 +704,44 @@ def toDoGet():
         n.append[dict]
     data = json.dumps(n)
     return data
+
+
+@construction.route('/getPlotForConstructionManagment',methods=['GET'])
+def getPlotForConstructionManagment():
+    managmentPlot = database.plotConstructionManagment.query.all()
+    allPlots = [] # list of dictionaries
+    plot_list=[]
+    temp=[]
+    for i in managmentPlot:
+        # allPlots.append(i.plotId)
+        if i.plotId not in plot_list:
+            plot_list.append(i.plotId)
+            dict={
+                "id":i.id,
+                "plotId":i.plotId,
+                "supervisor":i.supervisor
+            }
+            allPlots.append(dict)
+    print(allPlots)
+    for i in allPlots:
+        getData=database.constructionaddplot.query.filter(database.constructionaddplot.id==i['plotId']).all()
+        getData1=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.supervisor==i['supervisor']).all()
+        print(getData1)
+        print("adil")
+        print(getData)
+        for n,n1 in zip(getData,getData1):
+            print(n)
+            dict={
+                "plotId":n.id,
+                "societyName":n.societyName,
+                "sectorNo":n.sectorNo,
+                "plotNo":n.plotNo,
+                "supervisor":n1.supervisor,
+                "supervisor":n1.supervisor,
+                "dateStart":n1.dateStart,
+                "dateFinish":n1.dateFinish
+                }
+            temp.append(dict)
+    material = json.dumps(temp)
+    return material
+
