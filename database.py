@@ -138,6 +138,12 @@ class payments(db.Model):
     remaningBalance = db.Column(db.Float, default=None, nullable=False)
     completeOrNot = db.Column(db.String(100), default=None, nullable=False)
 
+class paymentImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    societyName = db.Column(db.String(100), nullable=False, default=None)
+    sectorNo = db.Column(db.String(100), nullable=False, default=None)
+    plotNo = db.Column(db.String(100), nullable=False, default=None)
+    imagePath = db.Column(db.String(200), default=None)
 
 class saleplotdetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)

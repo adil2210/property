@@ -48,7 +48,7 @@ from construction import construction
 app.register_blueprint(construction)
 
 
-UPLOAD_FOLDER = 'images'
+UPLOAD_FOLDER = 'files\images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 PLOT_FOLDER = 'plotimg'
 app.config['PLOT_FOLDER'] = PLOT_FOLDER
@@ -1546,7 +1546,24 @@ def paymentsDetails():
         else:
             return make_response("access denied"),400
 
-
+@app.route('/paymentImages', methods=['POST'])
+def payment_image_against_plot():
+    societyName = request.form['societyName']
+    sectorNo = request.form['sectorNo']
+    plotNo = request.form['plotNo']
+    image = request.files['paymentImage']
+    if image:
+        paymentFilename = secure_filename(image.filename)
+        image.save(os.path.join(
+            app.config['UPLOAD_FOLDER'], paymentFilename))
+        imagePath = ('files/images/' + paymentFilename)
+        print(imagePath)
+        imageObj = paymentImage(societyName=societyName, sectorNo=sectorNo, plotNo=plotNo, imagePath = imagePath)
+        db.session.add(imageObj)
+        db.session.commit()
+        return make_response("ok")
+    else:
+        return make_response("Wrong Sector Image Extension"), 400
 
 @app.route('/getAllPaymentsDetails', methods=['GET'])
 def getAllDataFromPayments():
