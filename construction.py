@@ -737,7 +737,6 @@ def getPlotForConstructionManagment():
                 "sectorNo":n.sectorNo,
                 "plotNo":n.plotNo,
                 "supervisor":n1.supervisor,
-                "supervisor":n1.supervisor,
                 "dateStart":n1.dateStart,
                 "dateFinish":n1.dateFinish
                 }
