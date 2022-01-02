@@ -677,6 +677,11 @@ def constructionManagment():
         comment=i['comment']
         violation=i['violation']
         name=i['name']
+        getData=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.plotId==toDoId).all()
+        if toDoId in getData:
+            stmt = (update(database.plotConstructionManagment).where(and_(database.plotConstructionManagment.plotId == plotId , database.plotConstructionManagment.toDoId == toDoId )).values(supervisor = supervisor , dateStart =dateStart, dateFinish=dateFinish,plotId=plotId,toDoId = toDoId,comment=comment,violation=violation,name=name))
+            app.db.session.execute(stmt)
+            app.db.session.commit()
         pCm = database.plotConstructionManagment(supervisor = supervisor , dateStart =dateStart, dateFinish=dateFinish,plotId=plotId,toDoId = toDoId,comment=comment,violation=violation,name=name )
         app.db.session.add(pCm)
         app.db.session.commit()
