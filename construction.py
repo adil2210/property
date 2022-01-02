@@ -1,6 +1,8 @@
+from datetime import datetime
 from sqlalchemy.orm import query
 import database
 from sqlalchemy import and_, or_, not_, update,func
+import datetime
 from flask import make_response
 from flask import *
 import app
@@ -666,23 +668,24 @@ allWorkName={
 @construction.route('/constructionManagment',methods=['POST'])
 def constructionManagment():
     constructionManagmentApi = request.get_json()
-    supervisor=constructionManagmentApi['supervisor']
-    dateStart=constructionManagmentApi['dateStart']
-    dateFinish=constructionManagmentApi['dateFinish']
-    plotId=constructionManagmentApi['plotId']
-    toDoId=constructionManagmentApi['toDoId']
-    comment=constructionManagmentApi['comment']
-    violation=constructionManagmentApi['violation']
-    name=constructionManagmentApi['name']
-    pCm = database.plotConstructionManagment(supervisor = supervisor , dateStart = dateStart, dateFinish=dateFinish,plotId=plotId,toDoId = toDoId,comment=comment,violation=violation,name=name )
-    app.db.session.add(pCm)
-    app.db.session.commit()
+    for i in constructionManagmentApi:
+        supervisor=i['supervisor']
+        dateStart=str(i['dateStart'])
+        dateFinish=str(i['dateFinish'])
+        plotId=i['plotId']
+        toDoId=i['toDoId']
+        comment=i['comment']
+        violation=i['violation']
+        name=i['name']
+        pCm = database.plotConstructionManagment(supervisor = supervisor , dateStart =dateStart, dateFinish=dateFinish,plotId=plotId,toDoId = toDoId,comment=comment,violation=violation,name=name )
+        app.db.session.add(pCm)
+        app.db.session.commit()
+    return make_response("ok"),200
 
 @construction.route('/toDoGet',methods=['POST'])
 def toDoGet():
     id=request.get_json()
     pid=id["pid"]
-
     idd=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.plotId==pid).all()
     n=[]
     for i in idd:
