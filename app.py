@@ -27,7 +27,7 @@ import os
 pymysql.install_as_MySQLdb()
 
 
-app = Flask(__name__,static_url_path='files')
+app = Flask(__name__)
 
 CORS(app)
 mail= Mail(app)
