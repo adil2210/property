@@ -682,26 +682,30 @@ def constructionManagment():
         app.db.session.commit()
     return make_response("ok"),200
 
-@construction.route('/toDoGet',methods=['POST'])
-def toDoGet():
-    id=request.get_json()
-    pid=id["pid"]
-    idd=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.plotId==pid).all()
+@construction.route('/toDoGet/<int:idd>',methods=['GET'])
+def toDoGet(idd):
+    # id=request.get_json()
+    # pid=id["pid"]
+    getData=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.plotId==idd).all()
     n=[]
-    for i in idd:
+    print(idd)
+    for i in getData:
         toId=i.toDoId
         name=allWorkName[str(toId)]
-        valueAgainstId=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.toDoId==toId).first()
-        for j in valueAgainstId:
+        print(name)
+        print(toId)
+        valueAgainstId=database.plotConstructionManagment.query.filter(database.plotConstructionManagment.toDoId==toId).all()
+        # print(valueAgainstId)
+        for j in getData:
             dict={
                 "toDoId":j.toDoId,
-                "name":name,
+                "descName":name,
                 "com":j.comment,
                 "vio":j.violation,
                 "name":j.name,
                 "date":j.dateOfPurchase
                 }
-        n.append[dict]
+            n.append(dict)
     data = json.dumps(n)
     return data
 
