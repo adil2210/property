@@ -48,7 +48,7 @@ db.create_all()
 from construction import construction
 app.register_blueprint(construction)
 
-UPLOAD_FOLDER = 'files\images'
+UPLOAD_FOLDER = 'images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 PLOT_FOLDER = 'plotimg'
 app.config['PLOT_FOLDER'] = PLOT_FOLDER
@@ -70,6 +70,12 @@ app.config['MAIL_SUPPRESS_SEND'] = False
 
 mail = Mail(app)
 
+
+
+@app.route('/images/<path:path>')
+def serve_page(path):
+    print(path)
+    return send_from_directory('images', path)
 
 @app.route("/" ,methods=['POST'])
 def deploy():
@@ -1556,7 +1562,7 @@ def payment_image_against_plot():
         paymentFilename = secure_filename(image.filename)
         image.save(os.path.join(
             app.config['UPLOAD_FOLDER'], paymentFilename))
-        imagePath = ('files/images/' + paymentFilename)
+        imagePath = ('images/' + paymentFilename)
         print(imagePath)
         imageObj = paymentImage(societyName=societyName, sectorNo=sectorNo, plotNo=plotNo, imagePath = imagePath)
         db.session.add(imageObj)
@@ -1660,14 +1666,17 @@ def getAllplotsInfoForSalePPT():
             plotlist = []
             allInfo = []
             temp=[]
+            getData=salepaymentmethod.query.all()
+            for i in getData:
+                idd=i.id
+                temp.append(idd)
             getplots = payments.query.all()
             for plot in getplots:
-                dict = {"societyName": plot.societyName,
-                        "sectorNo": plot.sectorNo,
-                        "plotNo": plot.plotNo}
-                plotlist.append(dict)
-            getData=salepaymentmethod.query.all()
-            
+                if plot.id not in temp:
+                    dict = {"societyName": plot.societyName,
+                            "sectorNo": plot.sectorNo,
+                            "plotNo": plot.plotNo}
+                    plotlist.append(dict)
             for i in plotlist:
                 getplots = plottopurchase.query.filter(and_(plottopurchase.sectorno == i['sectorNo'],
                                                         plottopurchase.societyname == i['societyName'],plottopurchase.plotno == i['plotNo'])).all()
