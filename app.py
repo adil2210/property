@@ -47,7 +47,6 @@ from database import *
 db.create_all()
 from construction import construction
 app.register_blueprint(construction)
-
 UPLOAD_FOLDER = 'images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 PLOT_FOLDER = 'plotimg'
