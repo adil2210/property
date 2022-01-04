@@ -46,10 +46,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55
 db = SQLAlchemy(app)
 
 from database import *
-db.create_all()
+
+# db.create_all()
 
 from construction import construction
 app.register_blueprint(construction)
+db.create_all()
 
 UPLOAD_FOLDER = 'images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
