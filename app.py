@@ -47,6 +47,7 @@ from database import *
 db.create_all()
 from construction import construction
 app.register_blueprint(construction)
+
 UPLOAD_FOLDER = 'images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 PLOT_FOLDER = 'plotimg'
@@ -56,7 +57,6 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app.config['SQLALCHEMY_POOL_SIZE'] = 1000
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
-
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -68,8 +68,6 @@ app.config['MAIL_DEBUG'] = True
 app.config['MAIL_SUPPRESS_SEND'] = False
 
 mail = Mail(app)
-
-
 
 @app.route('/images/<path:path>')
 def serve_page(path):
