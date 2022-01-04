@@ -36,15 +36,17 @@ app.secret_key = 'ghjc'
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 app.config['TESTING'] = True
-# app.config['SQLALCHEMY_POOL_SIZE'] = 1000
-# app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
+app.config['SQLALCHEMY_POOL_SIZE'] = 1000
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
+
 db = SQLAlchemy(app)
 from database import *
 db.create_all()
+
 from construction import construction
 app.register_blueprint(construction)
 
@@ -58,6 +60,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['SQLALCHEMY_POOL_SIZE'] = 1000
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 
+
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'adil22108@gmail.com'
@@ -68,6 +71,8 @@ app.config['MAIL_DEBUG'] = True
 app.config['MAIL_SUPPRESS_SEND'] = False
 
 mail = Mail(app)
+
+
 
 @app.route('/images/<path:path>')
 def serve_page(path):
