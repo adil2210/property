@@ -41,17 +41,16 @@ app.config['TESTING'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
-
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://abr-fd9d:Asdf1234@mysql.stackcp.com:57504/propertyManagment-31373362f0'
 db = SQLAlchemy(app)
 
 from database import *
 
-# db.create_all()
+db.create_all()
 
 from construction import construction
 app.register_blueprint(construction)
-db.create_all()
 
 UPLOAD_FOLDER = 'images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -1793,6 +1792,73 @@ def salePlotDetails():
             return make_response("ok"), 200
         else:
             return make_response("access denied")
+
+
+
+@app.route('/getAllSalePlotDetail', methods=['GET'])
+def getAllSalePlotDetail():
+    if (request.method == 'GET'):
+        allData = []
+        getAllData = saleplotdetail.query.all()
+        print(getAllData)
+        if getAllData:
+            for data in getAllData:
+                dict = {"id": data.id,
+                        "societyname": data.societyname,
+                        "sectorno": data.sectorno,
+                        "plotno": data.plotno,
+                        "development": data.development,
+                        "plotdescription": data.plotdescription,
+                        "plotamount": data.plotamount,
+                        "plotownername": data.plotownername
+                        }
+                allData.append(dict)
+            print(allData)
+            plotAllDataJson = json.dumps(allData)
+            return plotAllDataJson
+        else:
+            return make_response("No data Found"), 400
+    else:
+        return make_response("Request in error"), 400
+
+@app.route('/updateSalePlotDetails', methods=['PUT'])
+def updateSalePlotDetails():
+    if (request.method == 'PUT'):
+        updateObj = request.get_json()
+        stmt = (update(signup).where(saleplotdetail.id == updateObj['id']).values(societyname = updateObj['societyname'] , sectorno = updateObj['sectorno'] ,plotno = updateObj['plotno'] , plotamount = updateObj['plotamount'],plotdescription = updateObj['plotdescription'],plotownername = updateObj['plotownername'],development = updateObj['development']))
+        db.session.execute(stmt)
+        db.session.commit()
+        q = saleplotdetail.query.filter_by(id=updateObj['id']).all()
+        for data in q:
+            dict = {
+                    "societyname": data.societyname,
+                    "sectorno": data.sectorno,
+                    "plotno": data.plotno,
+                    "development": data.development,
+                    "plotdescription": data.plotdescription,
+                    "plotamount": data.plotamount,
+                    "plotownername": data.plotownername
+                }
+        return dict
+    else:
+        return make_response('using put method for update!') , 400
+
+@app.route('/deleteConstructionAddSupplier/<int:idd>', methods=['DELETE'])
+def deleteConstructionAddSupplier(idd):
+    if (request.method == 'DELETE'):
+        getData=saleplotdetail.query.filter(saleplotdetail.id==idd).all()
+        id=0
+        for i in getData:
+            id=i.id
+        print(id)
+        if getData:
+            stmt =saleplotdetail.query.get(idd)
+            app.db.session.delete(stmt)
+            app.db.session.commit()
+        else:
+            print("Not such id in database"),400
+        return make_response("ok"),200
+
 
 
 @app.route('/salepayments', methods=['POST'])
