@@ -176,7 +176,7 @@ def updateConstructionPlotData():
             p=i.pay
             amn=i.amount
         if p>0:
-            pay=float(p+updateObj['pay'])
+            pay=float(p)+float(updateObj['pay'])
         stmt = (update(database.constructionaddplot).where(database.constructionaddplot.id == updateObj['id']).values(societyName = updateObj['societyName'],plotNo = updateObj['plotNo'],sectorNo = updateObj['sectorNo'],plotOwnerName = updateObj['plotOwnerName'] , phoneNo = updateObj['phoneNo'] ,streetLocation = updateObj['streetLocation'],categories = updateObj['categories'],totalStories = updateObj['totalStories'],plotSqFeet = updateObj['plotSqFeet'],totalPlotSize = updateObj['totalPlotSize'],ratePerSqFeet = updateObj['ratePerSqFeet'],amount = amn,pay = pay,structure = updateObj['structure'],material = updateObj['material']))
         app.db.session.execute(stmt)
         app.db.session.commit()
