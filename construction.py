@@ -176,7 +176,7 @@ def updateConstructionPlotData():
             p=i.pay
             amn=i.amount
         if p>0:
-            pay=p+updateObj['pay']
+            pay=float(p+updateObj['pay'])
         stmt = (update(database.constructionaddplot).where(database.constructionaddplot.id == updateObj['id']).values(societyName = updateObj['societyName'],plotNo = updateObj['plotNo'],sectorNo = updateObj['sectorNo'],plotOwnerName = updateObj['plotOwnerName'] , phoneNo = updateObj['phoneNo'] ,streetLocation = updateObj['streetLocation'],categories = updateObj['categories'],totalStories = updateObj['totalStories'],plotSqFeet = updateObj['plotSqFeet'],totalPlotSize = updateObj['totalPlotSize'],ratePerSqFeet = updateObj['ratePerSqFeet'],amount = amn,pay = pay,structure = updateObj['structure'],material = updateObj['material']))
         app.db.session.execute(stmt)
         app.db.session.commit()
@@ -244,8 +244,7 @@ def addSupplier():
         app.db.session.add(supplierAdd)
         app.db.session.commit()
         return make_response("added"),200
-    
-    
+
 @construction.route('/getConstructionAddSupplierData', methods=['GET'])
 def getConstructionAddSupplierData():
     if (request.method == 'GET'):
