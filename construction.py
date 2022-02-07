@@ -532,12 +532,14 @@ def materialAssignedToPlot():
             prodObj = database.productInventory.query.filter(itemName == itemName).all()
             for i in prodObj:
                 quan = i.quantity
+            n=quan
+            print(n)
             if quantity > quan:
                 return make_response('inventory Fails quantity Entered is higher!'),400
             objMa = database.materiaAssingedToPlot(plotId = plotId , itemName = itemName, totalAmount=amount,quantity=quantity,supplierName = supplierName,quantityType=quantityType )
             app.db.session.add(objMa)
             app.db.session.commit()
-            stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).values(quantity=quan-quantity))
+            stmt = (update(database.productInventory).where(database.productInventory.itemName==itemName).values(quantity=n-quantity))
             app.db.session.execute(stmt)
             app.db.session.commit()
             return make_response('material Assigned!'),200
