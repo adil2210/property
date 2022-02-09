@@ -56,7 +56,13 @@ def getConstructionAccountData():
 def updateConstructionAccount():
     if (request.method == 'PUT'):
         updateObj = request.get_json()
-        stmt = (update(database.constructionaccount).where(database.constructionaccount.id == updateObj['id']).values(accountNo = updateObj['accountNo'] , name = updateObj['name'] ,amount = updateObj['amount']))
+        obj = database.constructionaccount.query.filter(
+            database.constructionaccount.id == updateObj['id']).all()
+        for i in obj:
+            amn = i.amount
+        if amn > 0:
+            newAmn = float(amn)+float(updateObj['amount'])
+        stmt = (update(database.constructionaccount).where(database.constructionaccount.id == updateObj['id']).values(accountNo = updateObj['accountNo'] , name = updateObj['name'] ,amount =newAmn ))
         app.db.session.execute(stmt)
         app.db.session.commit()
         q = database.constructionaccount.query.filter_by(id=updateObj['id']).all()
