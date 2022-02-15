@@ -41,9 +41,9 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://abr-fd9d:Asdf1234@mysql.stackcp.com:57504/propertyManagment-31373362f0'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://abr-fd9d:Asdf1234@mysql.stackcp.com:57504/propertyManagment-31373362f0'
 db = SQLAlchemy(app)
 
 from database import *
@@ -2259,6 +2259,47 @@ def updateAccountDetailsAfterToken(table):
         else:
             return make_response("no record found!"), 400
         return {"Balance is": remBalance}
+
+
+@app.route('/account/admin-partner/total-profit')
+def total_profit_against_plot():
+    dict = {}
+    list_of_sale_plots = []
+    plot_details = memberinplots.query.filter(
+        memberinplots.saleOrNot == 'yes').all()
+    for plot in plot_details:
+        actual_price = plot_actual_price(
+            plot.societyName, plot.sectorNo, plot.plotid)
+        salePlotPrice = plot_sale_price(
+            plot.societyName, plot.sectorNo, plot.plotid)
+        profit_amount = float(salePlotPrice) - float(actual_price)
+        amountPerPercentage = float(profit_amount) *float((float(plot.percentageInPlot)/100))
+        dict = {
+            'name': plot.names,
+            'role': plot.role,
+            'societyName': plot.societyName,
+            'sectorNo': plot.sectorNo,
+            'plotNo': plot.plotid,
+            'amountInvested': float(plot.p_amounts) if float(plot.p_amounts) > 0 else float(plot.adm_amounts),
+            'percentageInPlot': plot.percentageInPlot,
+            'actualPrice': actual_price,
+            'salePlotPrice': salePlotPrice,
+            'profit_loss': amountPerPercentage
+        }
+        list_of_sale_plots.append(dict)
+    return make_response(jsonify(list_of_sale_plots), 200)
+
+
+def plot_actual_price(societyN, secN, plN):
+    plot = plottopurchase.query.filter(plottopurchase.societyname == societyN,
+                                       plottopurchase.sectorno == secN, plottopurchase.plotno == plN).first()
+    return plot.plotamount
+
+
+def plot_sale_price(societyN, secN, plN):
+    plot = saleplotdetail.query.filter(saleplotdetail.societyname == societyN,
+                                       saleplotdetail.sectorno == secN, saleplotdetail.plotno == plN).first()
+    return plot.plotamount
 
 
 db.create_all()
