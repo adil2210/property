@@ -4,6 +4,7 @@ from app import db
 from flask_sqlalchemy import *
 import datetime
 
+
 class signup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
@@ -12,14 +13,13 @@ class signup(db.Model):
     phoneno = db.Column(db.String(12), nullable=False)
     cnic = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(100), nullable=False)
-    resetCode = db.Column(db.Integer,default=None, nullable=False)
+    resetCode = db.Column(db.Integer, default=None, nullable=False)
     ralation = db.relationship(
         'addsocietydata', backref='signup', lazy='dynamic')
     ralation1 = db.relationship(
         'accountsdetail', backref='signup', lazy='dynamic')
     ralation2 = db.relationship(
         'permissions', backref='signup', lazy='dynamic')
-
 
 
 class permissions(db.Model):
@@ -46,7 +46,6 @@ class addsocietydata(db.Model):
         'plottopurchase', backref='addsocietydata', lazy='dynamic')
 
 
-
 class plotimages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     plotnum = db.Column(db.String(100))
@@ -66,7 +65,6 @@ class plottopurchase(db.Model):
     dateTime = db.Column(db.String(1000), nullable=False)
     ralation4 = db.relationship(
         'payments', backref='plottopurchase', lazy='dynamic')
-
 
 
 class accountsdetail(db.Model):
@@ -102,12 +100,12 @@ class memberinplots(db.Model):
     names = db.Column(db.String(1000), default=None, nullable=False)
     p_amounts = db.Column(db.String(1000), default=None, nullable=False)
     adm_amounts = db.Column(db.String(1000), default=None, nullable=False)
-    percentageInPlot=db.Column(db.String(1000), default=None, nullable=False)
+    percentageInPlot = db.Column(db.String(1000), default=None, nullable=False)
     role = db.Column(db.String(1000), default=None, nullable=False)
     societyName = db.Column(db.String(1000), default=None, nullable=False)
     sectorNo = db.Column(db.String(1000), default=None, nullable=False)
     plotid = db.Column(db.String(1000), default=None, nullable=False)
-    saleOrNot= db.Column(db.String(1000), nullable=False)
+    saleOrNot = db.Column(db.String(1000), nullable=False)
 
 
 class payments(db.Model):
@@ -134,9 +132,11 @@ class payments(db.Model):
     taxAmount = db.Column((db.Float), default=None, nullable=False)
     taxDescription = db.Column(db.String(1000), default=None, nullable=False)
     onlineTransfer = db.Column((db.Float), default=None, nullable=False)
-    onlineDescription = db.Column(db.String(1000), default=None, nullable=False)
+    onlineDescription = db.Column(
+        db.String(1000), default=None, nullable=False)
     remaningBalance = db.Column(db.Float, default=None, nullable=False)
     completeOrNot = db.Column(db.String(100), default=None, nullable=False)
+
 
 class paymentImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -144,6 +144,7 @@ class paymentImage(db.Model):
     sectorNo = db.Column(db.String(100), nullable=False, default=None)
     plotNo = db.Column(db.String(100), nullable=False, default=None)
     imagePath = db.Column(db.String(200), default=None)
+
 
 class saleplotdetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -161,7 +162,7 @@ class saleplotdetail(db.Model):
 
 class salepaymentmethod(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    plotInfo=db.Column(db.String(1000), default=None, nullable=False)
+    plotInfo = db.Column(db.String(1000), default=None, nullable=False)
     societyName = db.Column(db.String(1000), default=None, nullable=False)
     sectorNo = db.Column(db.String(1000), default=None, nullable=False)
     plotNo = db.Column(db.String(1000), default=None, nullable=False)
@@ -183,7 +184,8 @@ class salepaymentmethod(db.Model):
     taxAmount = db.Column((db.Float), default=None, nullable=False)
     taxDescription = db.Column(db.String(1000), default=None, nullable=False)
     onlineTransfer = db.Column((db.Float), default=None, nullable=False)
-    onlineDescription = db.Column(db.String(1000), default=None, nullable=False)
+    onlineDescription = db.Column(
+        db.String(1000), default=None, nullable=False)
     profit = db.Column(db.Float, default=None, nullable=False)
     remaningBalance = db.Column(db.Float, default=None, nullable=False)
     completeOrNot = db.Column(db.String(100), default=None, nullable=False)
@@ -191,89 +193,85 @@ class salepaymentmethod(db.Model):
 
 class constructionaccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    accountNo=db.Column(db.String(1000), default=None, nullable=False)
+    accountNo = db.Column(db.String(1000), default=None, nullable=False)
     name = db.Column(db.String(1000), default=None, nullable=False)
     amount = db.Column(db.Float, default=None, nullable=False)
 
 
 class constructionaddplot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    societyName=db.Column(db.String(1000), default=None, nullable=False)
-    plotNo=db.Column(db.String(1000), default=None, nullable=False)
-    sectorNo=db.Column(db.String(1000), default=None, nullable=False)
-    plotOwnerName=db.Column(db.String(1000), default=None, nullable=False)
-    phoneNo=db.Column(db.String(1000), default=None, nullable=False)
-    streetLocation=db.Column(db.String(1000), default=None, nullable=False)
-    categories=db.Column(db.String(1000), default=None, nullable=False)
-    totalStories=db.Column(db.String(1000), default=None, nullable=False)
-    plotSqFeet=db.Column(db.Float, default=None, nullable=False)
-    totalPlotSize=db.Column(db.String(1000), default=None, nullable=False)
-    ratePerSqFeet=db.Column(db.Float, default=None, nullable=False)
-    amount=db.Column(db.Float, default=None, nullable=False)
-    pay=db.Column(db.Float, default=None, nullable=False)
-    structure=db.Column(db.String(1000), default=None, nullable=False)
-    material=db.Column(db.Boolean, nullable=False)
-    status=db.Column(db.String(1000), default=None, nullable=False)
+    societyName = db.Column(db.String(1000), default=None, nullable=False)
+    plotNo = db.Column(db.String(1000), default=None, nullable=False)
+    sectorNo = db.Column(db.String(1000), default=None, nullable=False)
+    plotOwnerName = db.Column(db.String(1000), default=None, nullable=False)
+    phoneNo = db.Column(db.String(1000), default=None, nullable=False)
+    streetLocation = db.Column(db.String(1000), default=None, nullable=False)
+    categories = db.Column(db.String(1000), default=None, nullable=False)
+    totalStories = db.Column(db.String(1000), default=None, nullable=False)
+    plotSqFeet = db.Column(db.Float, default=None, nullable=False)
+    remainingBalance = db.Column(db.Float, default=None, nullable=False)
+    totalPlotSize = db.Column(db.String(1000), default=None, nullable=False)
+    ratePerSqFeet = db.Column(db.Float, default=None, nullable=False)
+    amount = db.Column(db.Float, default=None, nullable=False)
+    pay = db.Column(db.Float, default=None, nullable=False)
+    structure = db.Column(db.String(1000), default=None, nullable=False)
+    material = db.Column(db.Boolean, nullable=False)
+    status = db.Column(db.String(1000), default=None, nullable=False)
     ralation = db.relationship(
         'materiaAssingedToPlot', backref='constructionaddplot', lazy='dynamic')
 
 
 class constructionaddsupplier(db.Model):
-    id=db.Column(db.Integer, primary_key=True)
-    name=db.Column(db.String(1000),default=None,nullable=False)
-    contact=db.Column(db.String(1000),default=None,nullable=False)
-    cnic=db.Column(db.String(1000),default=None,nullable=False)
-    address=db.Column(db.String(1000),default=None,nullable=False)
-    filer=db.Column(db.Boolean,nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(1000), default=None, nullable=False)
+    contact = db.Column(db.String(1000), default=None, nullable=False)
+    cnic = db.Column(db.String(1000), default=None, nullable=False)
+    address = db.Column(db.String(1000), default=None, nullable=False)
+    filer = db.Column(db.Boolean, nullable=False)
 
 
 class allPurchaseProductAndSup(db.Model):
-    id=db.Column(db.Integer, primary_key=True)
-    dateOfPurchase = db.Column(db.DateTime , default=datetime.date.today())
-    itemName=db.Column(db.String(1000),default=None,nullable=False)
-    rate=db.Column(db.Float,default=None,nullable=False)
-    unit=db.Column(db.String(1000),default=None,nullable=False)
-    quantity=db.Column(db.Float,default=None,nullable=False)
-    supplierName=db.Column(db.String(1000),default=None,nullable=False)
-    totalAmount=db.Column(db.Float,default=None,nullable=False)
-    paid=db.Column(db.Boolean,default=None,nullable=False)
-    pay=db.Column(db.Float,default=None,nullable=False)
-    remainingBalance=db.Column(db.Float,default=None,nullable=False)
-    paymentMethod=db.Column(db.String(1000),default=None,nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    dateOfPurchase = db.Column(db.DateTime, default=datetime.date.today())
+    itemName = db.Column(db.String(1000), default=None, nullable=False)
+    rate = db.Column(db.Float, default=None, nullable=False)
+    unit = db.Column(db.String(1000), default=None, nullable=False)
+    quantity = db.Column(db.Float, default=None, nullable=False)
+    supplierName = db.Column(db.String(1000), default=None, nullable=False)
+    totalAmount = db.Column(db.Float, default=None, nullable=False)
+    paid = db.Column(db.Boolean, default=None, nullable=False)
+    pay = db.Column(db.Float, default=None, nullable=False)
+    remainingBalance = db.Column(db.Float, default=None, nullable=False)
+    paymentMethod = db.Column(db.String(1000), default=None, nullable=False)
 
 
 class productInventory(db.Model):
-    id=db.Column(db.Integer, primary_key=True)
-    itemName=db.Column(db.String(1000),default=None,nullable=False)
-    rate=db.Column(db.Float,default=None,nullable=False)
-    unit=db.Column(db.String(1000),default=None,nullable=False)
-    quantity=db.Column(db.Float,default=None,nullable=False)
-    #remove this line
+    id = db.Column(db.Integer, primary_key=True)
+    itemName = db.Column(db.String(1000), default=None, nullable=False)
+    rate = db.Column(db.Float, default=None, nullable=False)
+    unit = db.Column(db.String(1000), default=None, nullable=False)
+    quantity = db.Column(db.Float, default=None, nullable=False)
+    # remove this line
 
 
 class materiaAssingedToPlot(db.Model):
-    id=db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     plotId = db.Column(db.Integer, db.ForeignKey('constructionaddplot.id'))
-    itemName=db.Column(db.String(1000),default=None,nullable=False)
-    quantity=db.Column(db.Float,default=None,nullable=False)
-    quantityType=db.Column(db.String(1000),default=None,nullable=False)
-    supplierName=db.Column(db.String(1000),default=None,nullable=False)
-    totalAmount=db.Column(db.Float,default=None,nullable=False)
+    itemName = db.Column(db.String(1000), default=None, nullable=False)
+    quantity = db.Column(db.Float, default=None, nullable=False)
+    quantityType = db.Column(db.String(1000), default=None, nullable=False)
+    supplierName = db.Column(db.String(1000), default=None, nullable=False)
+    totalAmount = db.Column(db.Float, default=None, nullable=False)
 
 
 class plotConstructionManagment(db.Model):
-    id=db.Column(db.Integer, primary_key=True)
-    supervisor = db.Column(db.String(1000),default=None,nullable=False)
-    dateStart=db.Column(db.String(1000),default=None,nullable=False)
-    dateFinish=db.Column(db.String(1000),default=None,nullable=False)
-    plotId=db.Column(db.Integer, db.ForeignKey('constructionaddplot.id'))
-    toDoId=db.Column(db.String(1000),default=None,nullable=False)
-    comment=db.Column(db.String(1000),default=None,nullable=False)
-    violation=db.Column(db.Boolean,nullable=False)
-    name=db.Column(db.String(1000),default=None,nullable=False)
-    dateOfPurchase = db.Column(db.DateTime , default=datetime.date.today())
-
-
-
-
-
+    id = db.Column(db.Integer, primary_key=True)
+    supervisor = db.Column(db.String(1000), default=None, nullable=False)
+    dateStart = db.Column(db.String(1000), default=None, nullable=False)
+    dateFinish = db.Column(db.String(1000), default=None, nullable=False)
+    plotId = db.Column(db.Integer, db.ForeignKey('constructionaddplot.id'))
+    toDoId = db.Column(db.String(1000), default=None, nullable=False)
+    comment = db.Column(db.String(1000), default=None, nullable=False)
+    violation = db.Column(db.Boolean, nullable=False)
+    name = db.Column(db.String(1000), default=None, nullable=False)
+    dateOfPurchase = db.Column(db.DateTime, default=datetime.date.today())
