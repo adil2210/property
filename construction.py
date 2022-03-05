@@ -533,6 +533,7 @@ def getAllItemName():
     getSupplier = database.productInventory.query.all()
     for i in getSupplier:
         dict = {
+            "id": i.id,
             "name": i.itemName,
             "rate": i.rate,
             "unit": i.unit,
