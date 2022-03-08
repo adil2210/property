@@ -1,6 +1,7 @@
+from app import db
+
 from sqlalchemy.sql.expression import null
 from werkzeug.security import generate_password_hash
-from app import db
 from flask_sqlalchemy import *
 import datetime
 
