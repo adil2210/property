@@ -21,6 +21,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import create_engine
 import random
 from construction import construction
+from database import *
 
 import sqlite3 as sql
 from flask_marshmallow import Marshmallow
@@ -46,6 +47,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://abr-fd9d:Asdf1234@mysql.stackcp.com:57504/propertyManagment-31373362f0'
+
 db = SQLAlchemy(app)
 
 
