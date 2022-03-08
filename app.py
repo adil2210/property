@@ -1,4 +1,3 @@
-from database import *
 from distutils.log import debug
 from sqlalchemy import and_, or_, not_, update, func, delete
 from sqlalchemy.sql.dml import Update
