@@ -1,4 +1,3 @@
-from database import *
 from distutils.log import debug
 from sqlalchemy import and_, or_, not_, update, func, delete
 from sqlalchemy.sql.dml import Update
@@ -21,6 +20,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import create_engine
 import random
 from construction import construction
+from database import *
 
 import sqlite3 as sql
 from flask_marshmallow import Marshmallow
