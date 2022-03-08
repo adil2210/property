@@ -19,8 +19,8 @@ import datetime
 from flask_mail import Mail, Message
 from sqlalchemy import create_engine
 import random
-from construction import construction
 from database import *
+from construction import construction
 
 import sqlite3 as sql
 from flask_marshmallow import Marshmallow
