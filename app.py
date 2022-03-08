@@ -1,4 +1,3 @@
-from database import *
 from distutils.log import debug
 from sqlalchemy import and_, or_, not_, update, func, delete
 from sqlalchemy.sql.dml import Update
@@ -20,6 +19,7 @@ import datetime
 from flask_mail import Mail, Message
 from sqlalchemy import create_engine
 import random
+from database import *
 from construction import construction
 
 import sqlite3 as sql
@@ -2313,6 +2313,45 @@ def plot_sale_price(societyN, secN, plN):
     plot = saleplotdetail.query.filter(saleplotdetail.societyname == societyN,
                                        saleplotdetail.sectorno == secN, saleplotdetail.plotno == plN).first()
     return plot.plotamount
+
+
+@app.route('/saleInvoice/<id>', methods=['GET'])
+def saleInvoice(id):
+    if [request.method == 'GET']:
+        plotlist = []
+        temp = []
+        # allplots = request.get_json()
+        getData2 = salepaymentmethod.query.filter(and_(
+            salepaymentmethod.id == id)).all()
+        for plot in getData2:
+            dict = {
+                "plotno": plot.plotno,
+                "societyName": plot.societyName,
+                "sectorNo": plot.sectorNo
+            }
+            temp.append(dict)
+        getData1 = payments.query.filter(and_(payments.sectorNo == ['sectorNo'],
+                                              payments.societyName == ['societyName'], payments.plotNo == ['plotno'])).all()
+        getData = saleplotdetail.query.filter(and_(saleplotdetail.sectorno == ['sectorNo'],
+                                                   saleplotdetail.societyname == ['societyName'], saleplotdetail.plotno == ['plotno'])).all()
+        for plot, plot1 in zip(getData, getData1):
+            dict = {"id": plot.id,
+                    "societyname": plot.societyname,
+                    "sectorno": plot.sectorno,
+                    "plotno": plot.plotno,
+                    "plotamount": plot.plotamount,
+                    "description1": plot1.description,
+                    "plotownername": plot.plotownername,
+                    "dateTime": plot.dateTime,
+                    "plotsize": plot1.plotsize,
+                    "plottype": plot1.plottype,
+                    "description": plot1.description,
+                    }
+            plotlist.append(dict)
+        plotpptJson = json.dumps(plotlist)
+        return plotpptJson
+    else:
+        return make_response("Error"), 400
 
 
 db.create_all()
