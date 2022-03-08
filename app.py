@@ -43,9 +43,9 @@ app.config['TESTING'] = True
 # app.config['SQLALCHEMY_POOL_TIMEOUT'] = 3000
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://adil2210:adilraheel@database-1.clxvaukfjppa.us-east-2.rds.amazonaws.com:3332/property'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:adil2210@localhost:3307/propertymanagment'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://arzmark_abr:3c~B~sYq3lqF@162.55.131.89:3306/arzmark_propertManagment'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://abr-fd9d:Asdf1234@mysql.stackcp.com:57504/propertyManagment-31373362f0'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://abr-fd9d:Asdf1234@mysql.stackcp.com:57504/propertyManagment-31373362f0'
 db = SQLAlchemy(app)
 
 
@@ -2313,6 +2313,45 @@ def plot_sale_price(societyN, secN, plN):
     plot = saleplotdetail.query.filter(saleplotdetail.societyname == societyN,
                                        saleplotdetail.sectorno == secN, saleplotdetail.plotno == plN).first()
     return plot.plotamount
+
+
+@app.route('/saleInvoice/<id>', methods=['GET'])
+def saleInvoice(id):
+    if [request.method == 'GET']:
+        plotlist = []
+        temp = []
+        # allplots = request.get_json()
+        getData2 = salepaymentmethod.query.filter(and_(
+            salepaymentmethod.id == id)).all()
+        for plot in getData2:
+            dict = {
+                "plotno": plot.plotno,
+                "societyName": plot.societyName,
+                "sectorNo": plot.sectorNo
+            }
+            temp.append(dict)
+        getData1 = payments.query.filter(and_(payments.sectorNo == ['sectorNo'],
+                                              payments.societyName == ['societyName'], payments.plotNo == ['plotno'])).all()
+        getData = saleplotdetail.query.filter(and_(saleplotdetail.sectorno == ['sectorNo'],
+                                                   saleplotdetail.societyname == ['societyName'], saleplotdetail.plotno == ['plotno'])).all()
+        for plot, plot1 in zip(getData, getData1):
+            dict = {"id": plot.id,
+                    "societyname": plot.societyname,
+                    "sectorno": plot.sectorno,
+                    "plotno": plot.plotno,
+                    "plotamount": plot.plotamount,
+                    "description1": plot1.description,
+                    "plotownername": plot.plotownername,
+                    "dateTime": plot.dateTime,
+                    "plotsize": plot1.plotsize,
+                    "plottype": plot1.plottype,
+                    "description": plot1.description,
+                    }
+            plotlist.append(dict)
+        plotpptJson = json.dumps(plotlist)
+        return plotpptJson
+    else:
+        return make_response("Error"), 400
 
 
 db.create_all()
